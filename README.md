@@ -160,7 +160,7 @@ You can use as well a mixin to work it quicker:
 As with the em functions, you can indicate sizes in pixels or baseline units. `$padding`, `$border` and `$margin` can be one value to represent same value for top and bottom directions, or two values first one for top and second one for bottom. Their value can be as well a string to manually force a value or false if you want to not be setted. `$rfs-ref`, as in functions, can be assigned manually or by a visual reference.
 
     div.one {
-      @include fluid-vertical($line-height: 2, $padding: 1, $margin: auto, 0);
+      @include fluid-vertical($line-height: 2, $padding: 1, $margin: auto, $rfs-ref: 0);
     }
 
 ##Reference
