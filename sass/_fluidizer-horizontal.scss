@@ -153,7 +153,7 @@ $cbw-history: false !default;
    @if ($grid-strategy) {
       @return grid-width();
    } @else {
-      @return $layout-px-width;
+      @return $layout-max-width;
    }
 }
 
