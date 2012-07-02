@@ -38,19 +38,12 @@ $columns: 12 !default;
 //@global px layout width in pixels. Ignored if $grid-strategy is set to true
 $layout-max-width: 960px !default;
 
-//@global int|px|list default containing block width reference to be used
-$default-cbw-ref: -1 !default;
-
-//@global px|list|bool runtime variable which will contain containing block size history through you go setting new deeper width's
-$cbw-history: false !default;
-
 //MIXINS
 //Set max-width of an element to grid-width or layout-max-width. This mixin is most of times applied to the element which will be the container for everything else, usually 'body', and it's used when you want to have a maximum resolution limit
 //
 //@param bool $em whether to set max-width in em's or not
 //@parem px $rfs relative font size to calculate em width. Only used if $em is set to true
 @mixin set-layout-max-width($em: true, $rfs: 16px) {
-   $max-width: false;
    @if ($grid-strategy) {
       $max-width: grid-width();
    } @else {
@@ -69,18 +62,10 @@ $cbw-history: false !default;
 ///@param px|list|string|bool $border border value. Horizontal size units, a string to manually force something or false to don't set
 ///@param px|list|string|bool $margin margin value. Horizontal size units, a string to manually force something or false to don't set
 //@param int|px|list|bool $cbw-ref containing block width reference
-@mixin fluid-horizontal($width:false, $padding: false, $border: false, $margin: false, $cbw-ref: $default-cbw-ref) {
+@mixin fluid-horizontal($width:false, $padding: false, $border: false, $margin: false, $cbw-ref) {
    $cbw: _get-cbw($cbw-ref);
    @if ($width) {
-      $_calculate-current-width: false;
       @include _percent-property(width, $width, $cbw);
-   } @else {
-      @if ($update-cbw-history) {
-	 $_calculate-current-width: true;
-	 $_current-box-size-out-of-width: 0;
-      } @else {
-	 $_calculate-current-width: true;
-      }
    }
    @if ($padding) {
       $left-right-padding: _extract-left-right-values($padding);
@@ -97,10 +82,6 @@ $cbw-history: false !default;
       @include _percent-property(margin-left, nth($left-right-margin, 1), $cbw);
       @include _percent-property(margin-right, nth($left-right-margin, 2), $cbw);
    }
-   @if ($width == false) {
-      $width: $cbw - $_current-box-size-out-of-width;
-   }
-   $cbw-history: _update-cbw-history($width, $cbw-ref);
 }
 
 //Display the rules to create a fluid column
@@ -110,7 +91,7 @@ $cbw-history: false !default;
 ///@param px|list|string|bool $border border value. Horizontal size units, a string to manually force something or false to don't set
 ///@param px|list|string|bool $margin margin value. Horizontal size units, a string to manually force something or false to don't set
 //@param int|px|list $cbw-ref containing block width reference
-@mixin fluid-column($width, $padding: false, $border: false, $margin: false, $cbw-ref: $default-cbw-ref) {
+@mixin fluid-column($width, $padding: false, $border: false, $margin: false, $cbw-ref) {
    @include _columnize();
    @include fluid-horizontal($width, $padding, $border, $margin, $cbw-ref);
 }
@@ -122,39 +103,12 @@ $cbw-history: false !default;
 //@param int|px|list $cbw-ref containing block width reference
 //
 //@return % size transformed to percentage
-@function percent($h-size, $cbw-ref: $default-cbw-ref) {
+@function percent($h-size, $cbw-ref) {
    $cbw: _get-cbw($cbw-ref);
    @if (type_of($h-size) == list) {
       $h-size: _px-from-grid($h-size);
    }
-   $cbw-history: _update-cbw-history(false, $cbw-ref);
    @return _percent-from-px($h-size, $cbw);
-}
-
-//Returns a percent width since a width in pixels or grid units
-//
-//@param px|list $width width to be translated to percentage in horizontal size units
-//@param int|px|list $cbw-ref containing block width reference
-//
-//@return % width transformed to percentage
-@function percent-width($width, $cbw-ref: $default-cbw-ref) {
-   $cbw: _get-cbw($cbw-ref);
-   @if (type_of($width) == list) {
-      $width: _px-from-grid($width);
-   }
-   $cbw-history: _update-cbw-history($width, $cbw-ref);
-   @return _percent-from-px($width, $cbw);
-}
-
-//Reset containing block history, returning the grid width or the layout width, depending if a grid design strategy is used or not. Value returned has to be assigned manually to @global $cb-width-history
-//
-//@return px initial containing block width, that's the grid width if a grid strategy is used or layout width otherwise
-@function reset-cbw-history() {
-   @if ($grid-strategy) {
-      @return grid-width();
-   } @else {
-      @return $layout-max-width;
-   }
 }
 
 //Returns grid width in pixels
@@ -163,13 +117,6 @@ $cbw-history: false !default;
 @function grid-width() {
    @return ($column-width + $gutter-width) * $columns;
 }
-
-//SYSTEM VARIABLES
-//@global bool runtime variable to let know the system if it is necessary to calculate current box width. It's necessary when user have supplied false as the width argument and true as the update-cbw-history in fluid-horizontal mixin
-$_calculate-current-width: false;
-
-//@global px runtime variable that keeps adding padding, border and margin size in pixels when $_calculate-current-width is set to true
-$_current-box-size-out-of-width: false;
 
 //SYSTEM MIXINS
 //For given property and value, display rule with the value as percentage
@@ -189,11 +136,6 @@ $_current-box-size-out-of-width: false;
       #{$property}: _percent-from-px($value, $cbw);
    } @else if (type_of($value) == string) {
       #{$property}: unquote($value);
-   }
-   @if (type_of($value) ==string) {
-      @if ($_calculate-current-width == true) { //if width is not supplied we calculate the current width to update later $cbw-history
-	 $_current-box-size-out-of-width: $_current-box-size-out-of-width;
-      }
    }
 }
 
@@ -228,21 +170,11 @@ $_current-box-size-out-of-width: false;
 //
 //@return px containing block width in pixels
 @function _get-cbw($cbw-ref) {
-   @if ($cbw-history == false) { //if still not initialized, initialize cb-width-history with user settings
-      $cbw-history: reset-cbw-history();
-   }
    @if (type_of($cbw-ref) == list) {
       @return _px-from-grid($cbw-ref);
    } @else if (type_of($cbw-ref) == number) {
       @if (unit($cbw-ref) == px) {
 	 @return $cbw-ref;
-      } @else if (unitless($cbw-ref)) {
-	 @if ($cbw-ref == -1) {
-	    $last-index: length($cbw-history);
-	    @return nth($cbw-history, $last-index);
-	 } @else {
-	    @return nth($cbw-history, $cbw-ref + 1);
-	 }
       }
    }
 }
@@ -280,38 +212,4 @@ $_current-box-size-out-of-width: false;
       $value-right: $value;
    }
    @return ($value-left, $value-right);
-}
-
-//Update containing block width history. If a reference to the parent nesting level is supplied, pointer will be setted to that nesting level (rest of history will be removed). Then, if a new width is supplied, that width will be added to the corresponding nesting level. If a manual containing block width is passed (horizontal size units), nothing happens. The returning value of this function has to be assigned manually to @global $cbw-history
-//
-//@param px|list $width width in horizontal size units
-//@param int|px|list $cbw-ref containing block width reference
-//
-//@return list new containing block width history, a list of integers in pixels
-@function _update-cbw-history($width, $cbw-ref) {
-   @if (type_of($width) == list) {
-      $width: _px-from-grid($width);
-   }
-   @if (type_of($cbw-ref) == list) {
-      @return $cbw-history;
-   } @else if(type_of($cbw-ref) == number) {
-      @if (unit($cbw-ref) == px) {
-	 @return $cbw-history;
-      } @else if (unitless($cbw-ref)) {
-	 @if ($cbw-ref == 0) {
-	    $cbw-history: reset-cbw-history();
-
-	 } @else if ($cbw-ref > 0) {
-	    $new-cbw-history: reset-cbw-history();
-	    @for $i from 2 through $cbw-ref +1 {
-	       $new-cbw-history: append($new-cbw-history, nth($cbw-history, $i));
-	    }
-	    $cbw-history: $new-cbw-history;
-	 }
-	 @if ($width !=false) {
-	    $cbw-history: append($cbw-history, $width);
-	 }
-	 @return $cbw-history;
-      }
-   }
 }
