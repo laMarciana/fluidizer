@@ -1,0 +1,92 @@
+@import '../sass/fluidizer-horizontal';
+
+div {
+   /*PERCENT*/
+
+   /*size and cbw in px*/
+   width: percent(200px, 200px); /*100%*/
+   width: percent(200px, 500px); /*40%*/
+
+   /*size in px, cbw in grid*/
+   width: percent(200px, 4 3); /*66.6%*/
+
+   /*size in grid, cbw in px*/
+   width: percent(2 2, 200px); /*80%*/
+
+   /*size and cbw in grid*/
+   width: percent(2 2, 5 4); /*42.10%*/
+
+   /*LAYOUT MAX WIDTH*/
+   /*GRID STRATEGY*/
+
+   $grid-strategy: true;
+   $column-width: 60px;
+   $gutter-width: 20px;
+   $columns: 12;
+   /*in em's, default rfs*/
+   @include set-layout-max-width(); /*60em*/
+
+   /*in pixels*/
+   @include set-layout-max-width(false); /*960px*/
+
+   /*with custom rfs*/
+   @include set-layout-max-width(true, 18px); /*53.3em*/
+
+   /*NON-GRID STRATEGY*/
+
+   $grid-strategy: false;
+   $layout-max-width: 960px;
+   /*in em, with default rfs*/
+   @include set-layout-max-width(); /*60em*/
+
+   /*in pixels*/
+   @include set-layout-max-width(false); /*960px*/
+
+   /*with custom rfs*/
+   @include set-layout-max-width(true, 18px); /*53.3em*/
+
+   /*FLUID HORIZONTAL*/
+
+   /*all values in pixels, same for left and right*/
+   @include fluid-horizontal(300px, 100px, 2px, 50px, 900px);
+   /*33.3%, 11.1%, 0.2%, 5.5%*/
+
+   /*all values in pixels except cbw, same for left and right*/
+   @include fluid-horizontal(300px, 100px, 2px, 50px, 9 9);
+   /*41.6%, 13.8%, 0.28%, 6.94%*/
+
+   /*all values in pixels, different for left and right*/
+   @include fluid-horizontal(300px, 100px 50px, 2px 1px, 50px 75px, 900px);
+   /*33.3%, 11.1%, 5.55%, 0.2%, 0.1%, 5.5%, 8.3%*/
+
+   /*all values in grid, same for left and right*/
+   @include fluid-horizontal(2 1, 1 1, 1 1, 1 1, 7 7);
+   /*25%, 14.28%, 14.28%, 14.28%*/
+
+   /*all values in grid, different for left and right*/
+   @include fluid-horizontal(2 1, (1 1) (2 1), (1 1) (2 1), (1 1) (2 1), 9 9);
+   /*19.4%, 11.1%, 19.4%, 11.1%, 19.4%, 11.1%, 19.4%,*/
+
+   /*values in pixels or grid, different for left and right*/
+   @include fluid-horizontal(100px, 50px (2 1), (1 1) 3px, (1 1) 75px, 700px);
+   /*14.29%, 7.14%, 20%, 11.43%, 0.43%, 11.43%, 10.71%*/
+
+   /*values as strings or 0, same for left and right*/
+   @include fluid-horizontal(auto, auto, 0, auto, 700px);
+   /*auto, auto, 0, auto*/
+
+   /*values as strings or 0, different for left and right*/
+   @include fluid-horizontal(auto, auto auto, 0 0, auto auto, 700px);
+   /*auto, auto, auto, 0, 0, auto, auto*/
+
+   /*values aren't set, same for left and right*/
+   @include fluid-horizontal(false, false, false, false, 700px);
+
+   /*some values aren't set, different for left and right*/
+   @include fluid-horizontal(false, false auto, 0 false, 100px false, 700px);
+   /*auto, 0, 14.28%*/
+
+   /*FLUID COLUMN*/
+   @include fluid-column(300px, 100px, 2px, 50px, 900px);
+   /*float: left, 33.3%, 11.1%, 0.2%, 5.5%*/
+}
