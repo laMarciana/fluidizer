@@ -1,16 +1,14 @@
-#Fluidizer
-Fluidizer is a Sass framework which purpose is to help in the development of fluid web pages. It tries to make life easier for developers and allow them to think in pixels and get percentage horizontal and em's vertical layouts. It simplifies as well the process of dealing with grids and baselines, allowing developers to think in "grid units" and "baseline units" and get corresponding fluid values.
+# Fluidizer
+Fluidizer is a Sass tool intended to help in the development of 100% fluid web sites, including fluid grid and fluid vertical rhythm designs. It allows developers to think in pixels or grid and baseline units, and to get automatically percentage values for horizontal sizes and em values for vertical ones.
 
-##Features
-* Set pixel size and containing block reference, get percentage size.
-* For grids, set number of columns and gutters a box spread and its containing block reference, get percentage size.
-* Optionally, keep record of containing block width's in a visual way, taking advantage of sass nested rules.
-* Set pixel size and relevant font size in pixels, get em size.
-* For baseline rhythm, set number of baselines a box spread and its relevant font size, get em size.
-* Optionally, keep record of relevant font sizes in a visual way, taking advantage of sass nested rules.
+## Features
+* Provide pixel size and containing block's width, get percentage size.
+* For grids, provide the amount of columns and gutters a size takes up and its containing block width, get percentage size.
+* Provide pixel size and the relevant font size, get em size.
+* For baseline rhythm, provide the amount of baseline increments a size takes up and its relevant font size, get em size.
 
-##Setup
-Fluidizer framework requires you are working with [Sass](http://sass-lang.com/ "Sass homepage").
+## Setup
+Fluidizer requires you are working with [Sass](http://sass-lang.com/ "Sass homepage").
 
 With git, to get latest stable version:
 
@@ -20,15 +18,13 @@ Otherwise, download it from:
 
     https://github.com/laMarciana/fluidizer/zipball/master
 
-Put the files contained in the sass folder in your sass directory and import them from your sass stylesheet:
+Put the file contained in the `sass/_fluidizer.scss` in your sass directory and import it from your sass style-sheet:
 
-    //For horizontal layout
-    @import fluidizer-horizontal;
-    //For vertical layout
-    @import fluidizer-vertical;
+    @import fluidizer;
 
-##How it works?
-###Horizontal layout
+## How does it work?
+### Horizontal layout
+#### Configuring design properties
 For grid based layouts, set:
 
     $grid-strategy: true;
@@ -39,74 +35,58 @@ For grid based layouts, set:
 For non-grid based layouts, set:
 
     $grid-strategy: false;
-    $layout-max-width: 960px; //your layout max-width
+    $design-width: 960px; //your design's width
 
-Set the wrapper element which will contain your page layout:
-
-    body {
-      @include set-layout-max-width();
-    }
-
-This will set your grid or layout max-width to body element in em's, having 16px as the relevant font size. If you want to change the relevant font size, change $rfs parameter like in `set-layout-max-width($rfs: 21px)`. If you want to use pixels, set the $em parameter to false, like in `set-layout-max-width($em: false)`.
-
-You can use the `percent($h-size, $cbw-ref)` function to calculate percentage. Its first argument is the size you want to be transformed, the second one is a reference of containing block width.
-
-You can get percentage sizes from two kinds of units:
-
-**Pixel units:** i.e. 100px.
-
-    margin-left: percent(100px, 400px);
-
-**Grid units:** i.e. 3 2, meaning 3 times column width plus 2 times gutter width.
-
-    margin-left: percent(3 2, 400px);
-
-You can provide containing block width in two ways:
-
-**Manually**, in pixel or grid units.
-
-    margin-left: percent(100px, 4 4);
-
-**As a visual reference**. 0 means parent element is root element (which width is grid or page width), 1 means parent element is first descendant of root element you have already setted and so on. -1 means new element is descendant of last element setted. This is specially visual when used in combination with sass nested rules feature.
-
-    margin-left: percent(100px, 1);
-
-**IMPORTANT**: when using the visual reference notation, width sizes must me setted with the `percent-width()` function.
+#### The overall container
+Optionally, set the wrapper element that will contain your whole layout. That way, when the screen resolution is equal or higher than this value, all the horizontal dimensions set with fluidizer will have percentage dimensions but, visually, they exactly will take up the amount of pixels that you indicated. For lower resolutions, all the horizontal dimensions set with fluidizer will scale.
 
     body {
-      @include set-layout-max-width();
-        div.one {
-          width: percent-width(3 3, 0); //Descendant of root element. Set new width
-          margin: 0 percent(0 0.5, 0); //Descendant of root element
-          div.two {
-            padding-left: percent(10px, 1); //Descendant of first root descendant
-          }
-          div.three {
-            padding-right: percent(10px, 1); //Descendant of first root descendant
-          }
-        }
+      @include layout-max-width();
     }
+
+*This will set your layout width as the `max-width` for the body element. By default, it is set in em units with the value of the `$initial-rfs` variable (16px if not manually changed) as the relevant font size. If you want to change the relevant font size, change the `$rfs` parameter like in `layout-max-width($rfs: 21px)`. If you want to use pixels, set the `$em` parameter to false, like in `layout-max-width($em: false)`.*
+
+#### Getting percentage values
+To get percentage values, you can use the `percent()` function, which takes two arguments: the value to be converted and the containing block width.
+
+    percent($value, $cbw)
+
+You can provide both the value and the containing block width arguments in two different units:
+
+* Pixel units: Like in *10px* or *23px*.
+
+* Grid units: A list of two unitless numbers. Firs one telling the amount of column width's the size takes up (without the gutters), and second one telling the amount of gutters the size takes up. Ex: *3 2* means 3 column width's plus 2 gutters.
+
+Here they are some examples:
+
+    margin-left: percent(100px, 400px); //it outputs 'margin-left: 25%'
+
+    margin-left: percent(3 2, 400px); //for a 60*20*12 grid, it outputs 'margin-left: 55%'
+
+    margin-left: percent(3 3, 6 6); //it outputs, 'margin-left: 50%'
+
+### Mixins
 
 You can use as well two mixins to work it quicker:
 
-    fluid-horizontal($width, $padding, $border, $margin, $cbw-ref)
+    fluid-x($width, $padding, $border, $margin, $cbw)
 
 and
 
-    fluid-column($width, $padding, $border, $margin, $cbw-ref)
+    fluid-column($width, $padding, $border, $margin, $cbw)
 
 The only difference is that `fluid-column()` will add `float:left;` to make the box appear as a column.
 
-As with percent functions, you can indicate sizes in pixels or grid units. `$padding`, `$border` and `$margin` can be one value to represent same value for left and right directions, or two values first one for left and second one for right. Their value can be as well a string to manually force a value or false if you want to not be setted. `$cbw-ref`, as in functions, can be assigned manually or by a visual reference.
+As in the `percent()` function, you can provide each argument in pixel or grid units, and they can be as well a string to manually force something or false to don't set them. For `$padding`, `$border` and `$margin`, they can be just one value that will be used both for left and right values, or a list of two values, being the first one used for the left property and the second one for the right property.
 
-    div.one {
-      @include fluid-column($width: 3 3, $padding: 0 2, $border: "1px", $margin: (0 1) auto, $cbw-ref: 0);
-        div.two {
-          @include fluid-horizontal($width: 50px, $margin: auto, $cbw-ref: 1);
-        }
-    }
+Here they are some examples:
+
+    @include fluid-x($width: 400px, $padding: 20px, $border: 0, $margin: 60px 100px, $cbw: 600px);
+
+    @include fluid-column($width: 4 3, $padding: (2 2) (2 2), $border: 0, $margin: auto, $cbw: 12 12);
 
 ###Vertical layout
+#### Configuring design properties
 Set initial relevant font size, usually browser default:
 
     $initial-rfs: 16px;
@@ -115,59 +95,46 @@ If using baseline rhythm, set baseline height:
 
     $baseline: 18px;
 
-You can use the `em($v-size, $rfs-ref)` function to calculate em's. Its first argument is the size you want to be transformed, the second one is a reference of relevant font size.
+#### Getting em values
+To get em values you can use the `em()` function, which takes two arguments: the value to be converted and the relevant font size.
 
-You can get em sizes from two kinds of units:
+    em($value, $rfs)
 
-**Pixel units:** i.e. 21px
+You can provide both the value and the relevant font size arguments in two different units:
 
-    height: em(21px, 16px);
+* Pixel units: Like in *21px* or *14px*.
 
-**Baseline units:** i.e. 2, meaning 2 times baseline height.
+* Baseline units: A unitless number telling the amount of baseline heights the size takes up. Ex: *3* means 3 baseline height's.
 
-    height: em(2, 16px);
+Here they are some examples:
 
-You can provide relevant font size in two ways:
+    font-size: em(18px, 16px); //it outputs `font-size: 1.125em`
 
-**Manually**, in pixels
+    font-size: em(1, 18px); //for a 18px baseline, it outputs `font-size: 1em`
 
-    height: em(21px, 16px);
+    font-size: em(1, 1); //it outputs `font-size: 1em`
 
-**As a visual reference**. 0 means relevant font size is `$initial-rfs`, 1 means relevant font size is the second relevant font size setted and so on. -1 means relevant font size is last one setted. This is specially visual when used in combination with sass nested rules feature.
-
-    height: em(21px, 0);
-
-**IMPORTANT**: when usign the visual reference notation, new font sizes must be setted with the `em-font-size()`function.
-
-    $initial-rfs: 16px;
-    body {
-      div.one {
-        font-size: em-font-size(18px, 0); //Set a new relevant font size
-        height: em(12, 1); //Relevant font size is first one setted after the $initial-rfs
-          div.two {
-            line-height: em(29px, 1); //Relevant font size is first one setted after the $initial-rfs
-          }
-      }
-      div.three {
-        padding-top: em(29px, 0); //Relevant font size is $initial-rfs
-      }
-    }
+### Mixins
 
 You can use as well a mixin to work it quicker:
 
-    fluid-vertical($line-height, $height, $padding, $border, $margin, $rfs-ref)
+    fluid-y($line-height, $height, $padding, $border, $margin, $rfs)
 
-As with the em functions, you can indicate sizes in pixels or baseline units. `$padding`, `$border` and `$margin` can be one value to represent same value for top and bottom directions, or two values first one for top and second one for bottom. Their value can be as well a string to manually force a value or false if you want to not be setted. `$rfs-ref`, as in functions, can be assigned manually or by a visual reference.
+As in the `em()` function, you can provide each argument in pixel or baseline units, and they can be as well a string to manually force something or false to don't set them. For `$padding`, `$border` and `$margin`, they can be just one value that will be used both for top and bottom values, or a list of two values, being the first one used for the top property and the second one for the bottom property.
 
-    div.one {
-      @include fluid-vertical($line-height: 2, $padding: 1, $margin: auto, $rfs-ref: 0);
-    }
+Here they are some examples:
 
-##Reference
+    @include fluid-y($line-height: 21px, $height: 21px, $border: 0, $margin: 5px 7px, $rfs: 30px);
 
-Variables, functions and mixins are full documented in source code.
+    @include fluid-y($line-height: 1, $height: 0.5, $rfs: 2);
+
+## Examples
+You can find code examples in the `test` directory.
+
+## Reference
+Variables, functions and mixins are fully documented in the source code.
 
 ___
 
-Copyright 2011, Marc Busqué Pérez, under GNU LESSER GENERAL PUBLIC LICENSE
+Copyright 2012, Marc Busqué Pérez, under GNU LESSER GENERAL PUBLIC LICENSE
 marc@lamarciana.com - http://www.lamarciana.com

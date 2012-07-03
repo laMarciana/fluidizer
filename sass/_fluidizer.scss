@@ -1,4 +1,4 @@
-//Copyright 2011, Marc Busqué Pérez
+//Copyright 2012, Marc Busqué Pérez
 //
 //This file is a part of Fluidizer.
 //
@@ -48,7 +48,7 @@ $gutter-width: 20px !default;
 $columns: 12 !default;
 
 //@global px Non-grid layout width in pixels. Ignored if $grid-strategy is set to true
-$design-max-width: 960px !default;
+$design-width: 960px !default;
 
 //@global px Baseline height in pixels.
 $baseline: 18px !default;
@@ -58,11 +58,11 @@ $initial-rfs: 16px !default;
 
 //MIXINS
 //
-//Set the max-width property for an element to the grid width or the design maximum width. This mixin is most of the times applied to an element that is the container of anything else (sometimes this is 'body'), and it is used when you want to have a maximum resolution limit. When the screen resolution is equal or higher than this value, all the x dimensions set with fluidizer will have percentage dimensions but visually they exactly will take up the amount of pixels that you indicated. For lower resolutions, all the x dimensions set with fluidizer will scale.
+//Set the max-width property for an element to the grid width or the design width. This mixin is most of the times applied to an element that is the container of anything else (sometimes this is 'body'), and it is used when you want to have a maximum resolution limit. When the screen resolution is equal or higher than this value, all the x dimensions set with fluidizer will have percentage dimensions but visually they exactly will take up the amount of pixels that you indicated. For lower resolutions, all the x dimensions set with fluidizer will scale.
 //
 //@param bool $em Whether to set max-width in em units or not. Defaults to true.
 //@param px $rfs Relative font size used to calculate max-width in em. Only used if $em parameter is set to true.
-@mixin set-layout-max-width($em: true, $rfs: $initial-rfs) {
+@mixin layout-max-width($em: true, $rfs: $initial-rfs) {
    $max-width: get-layout-max-width();
    @if ($em) {
       $max-width: ($max-width / $rfs) * 1em;
@@ -263,7 +263,7 @@ $initial-rfs: 16px !default;
    @if ($grid-strategy) {
       @return grid-width();
    } @else {
-      @return $design-max-width;
+      @return $design-width;
    }
 }
 

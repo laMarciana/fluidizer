@@ -26,26 +26,26 @@ div {
    $gutter-width: 20px;
    $columns: 12;
    /*in em's, default rfs*/
-   @include set-layout-max-width(); /*60em*/
+   @include layout-max-width(); /*60em*/
 
    /*in pixels*/
-   @include set-layout-max-width(false); /*960px*/
+   @include layout-max-width(false); /*960px*/
 
    /*with custom rfs*/
-   @include set-layout-max-width(true, 18px); /*53.3em*/
+   @include layout-max-width(true, 18px); /*53.3em*/
 
    /*NON-GRID STRATEGY*/
 
    $grid-strategy: false;
    $layout-max-width: 960px;
    /*in em, with default rfs*/
-   @include set-layout-max-width(); /*60em*/
+   @include layout-max-width(); /*60em*/
 
    /*in pixels*/
-   @include set-layout-max-width(false); /*960px*/
+   @include layout-max-width(false); /*960px*/
 
    /*with custom rfs*/
-   @include set-layout-max-width(true, 18px); /*53.3em*/
+   @include layout-max-width(true, 18px); /*53.3em*/
 
    /*FLUID X*/
 
