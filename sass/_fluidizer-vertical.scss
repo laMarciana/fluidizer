@@ -18,22 +18,19 @@
 //////////////////////////////////////////////////////////////////////////////
 //Contact: Marc Busqué Pérez - marc@lamarciana.com - http://www.lamarciana.com
 //////////////////////////////////////////////////////////////////////////////
-//In documentation, "vertical size unit" value mean: an integer in pixels to indicate a vertical size in pixels, or an unitless integer to indicate a vertical size in "baseline units". In baseline units, the number indicates how many baseline heights the vertical size spreads
 //
-//In documentation, "relevant font size reference" is a value indicating the relevant font size for given selected elements. It can be an integer in pixels (for a manual assigment) or a unitless integer. If last one, 0 means relevant font size is `$initial-rfs`, 1 means relevant font size is the second relevant font size setted and so on. -1 means relevant font size is last one setted.
+//DEFINITIONS USED THROUGHOUT THE DOCUMENTATION
+//
+//Vertical size units: An integer in pixels to tell a vertical size in pixels, or an unitless integer to indicate a vertical size in baseline units (see below).
+//
+//Baseline units: A unitless integer. It tells how many baseline heights the vertical size takes up.
 //
 //VARIABLES
-//@global px baseline height in pixels
-$baseline:18px !default;
+//@global px Baseline height in pixels.
+$baseline: 18px !default;
 
-//@global px initial relevant font size (usually browser default)
-$initial-rfs:16px !default;
-
-//@global int|px default relevant font size reference
-$default-rfs-ref: -1 !default;
-
-//@global px|list|bool runtime variable which will contain the relevant font size history
-$rfs-history: false !default;
+//@global px Initial relevant font size (usually browser default).
+$initial-rfs: 16px !default;
 
 //MIXINS
 //Display the rules to create a vertical fluid box
@@ -43,7 +40,7 @@ $rfs-history: false !default;
 ///@param px|int|string|bool $padding padding value. In vertical size units, a string to manually indicate something, or false to don't set it
 ///@param px|int|string|bool $boder boder value. In vertical size units, a string to manually indicate something, or false to don't set it
 ///@param px|int|string|bool $margin margin value. In vertical size units, a string to manually indicate something, or false to don't set it
-@mixin fluid-vertical($line-height: false, $height:false, $padding: false, $border: false, $margin: false, $rfs-ref: $default-rfs-ref) {
+@mixin fluid-vertical($line-height: false, $height:false, $padding: false, $border: false, $margin: false, $rfs-ref: $initial-rfs) {
    $rfs: _get-rfs($rfs-ref);
    @if ($line-height) {
       @include _em-property(line-height, $line-height, $rfs);
@@ -66,7 +63,6 @@ $rfs-history: false !default;
       @include _em-property("margin-top", nth($left-right-margin, 1), $rfs);
       @include _em-property("margin-bottom", nth($left-right-margin, 2), $rfs);
    }
-   $rfs-history: _update-rfs-history(false, $rfs-ref);
 }
 
 //FUNCTIONS
@@ -76,37 +72,13 @@ $rfs-history: false !default;
 //@param int|px $rfs-ref relevant font size reference
 //
 //@return em size transformed to em's
-@function em($v-size, $rfs-ref: $default-rfs-ref) {
+@function em($v-size, $rfs-ref: $initial-rfs) {
    @if (unitless($v-size)) {
       $v-size: _px-from-baseline($v-size);
    }
    $rfs: _get-rfs($rfs-ref);
    $px-size: _em-from-px($v-size, $rfs);
-   $rfs-history: _update-rfs-history(false, $rfs-ref);
    @return $px-size;
-}
-
-//Return an em font-size since a font-size in vertical size units
-//
-//@param px|int $font-size font-size to be transformed to em's. In vertical size units
-//@param int|px $rfs-ref relevant font size reference
-//
-//@return em size transformed to em's
-@function em-font-size($font-size, $rfs-ref: $default-rfs-ref) {
-   @if (unitless($font-size)) {
-      $font-size: _px-from-baseline($font-size);
-   }
-   $rfs: _get-rfs($rfs-ref);
-   $px-size: _em-from-px($font-size, $rfs);
-   $rfs-history: _update-rfs-history($font-size, $rfs-ref);
-   @return $px-size;
-}
-
-//Reset relevant font size history, returning initial relevant font size. Value returned has to be assigned manually to @global $rfs-history
-//
-//@return px initial relevant font size
-@function reset-rfs-history() {
-   @return $initial-rfs;
 }
 
 //SYSTEM MIXINS
@@ -184,9 +156,6 @@ $rfs-history: false !default;
 //
 //@return px relevant font size in pixels
 @function _get-rfs($rfs-ref) {
-   @if ($rfs-history == false) { //if still not initialized, initialize rfs-history with user settings
-      $rfs-history: reset-rfs-history();
-   }
    @if (type_of($rfs-ref) == number) {
       @if (unit($rfs-ref) == px) {
 	 @return $rfs-ref;
@@ -199,30 +168,4 @@ $rfs-history: false !default;
 	 }
       }
    }
-}
-
-//Update relevant font size history. If a reference to an upper font size in history is supplied, pointer will be setted to that font size (rest of history will be removed). The, if a new font-size is supplied, that font-size will be added to the corresponding nesting level. If a manual relevant font size is passed (vertical size units), nothing happens. The returning value of this function has to be assigned manually to @global $rfs-history
-//
-//@param px|bool $fs $font-size to be updated. If it's a boolean false, then relevant font size history will be updated but no new relevant font-size will be added
-//@param int|px $rfs-ref relevant font size reference
-//
-//@return list new relevant font size history, a list of integers in pixels
-@function _update-rfs-history($fs, $rfs-ref) {
-   @if (unit($rfs-ref) == px) {
-      @return $rfs-history;
-   } @else if (unitless($rfs-ref)) {
-      @if ($rfs-ref == 0) {
-	 $rfs-history: reset-rfs-history();
-      } @else if($rfs-ref > 0) {
-	 $new-rfs-history: reset-rfs-history();
-	 @for $i from 2 through $rfs-ref +1 {
-	    $new-rfs-history: append($new-rfs-history, nth($rfs-history, $i));
-	 }
-	 $rfs-history: $new-rfs-history;
-      }
-   }
-   @if ($fs != false) {
-      $rfs-history: append($rfs-history, $fs);
-   }
-   @return $rfs-history;
 }
