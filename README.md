@@ -18,7 +18,7 @@ Otherwise, download it from:
 
     https://github.com/laMarciana/fluidizer/zipball/master
 
-Put the file contained in the `sass/_fluidizer.scss` in your sass directory and import it from your sass style-sheet:
+Put the file `sass/_fluidizer.scss` in your sass directory and import it from your sass style-sheet:
 
     @import fluidizer;
 
