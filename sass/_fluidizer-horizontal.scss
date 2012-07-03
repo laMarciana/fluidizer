@@ -18,198 +18,235 @@
 //////////////////////////////////////////////////////////////////////////////
 //Contact: Marc Busqué Pérez - marc@lamarciana.com - http://www.lamarciana.com
 //////////////////////////////////////////////////////////////////////////////
-//In documentation, "horizontal size units" value mean: an integer in pixels to indicate an horizontal size in pixels, or a two unitless integers to indicate a horizontal size in "grid units". In grid units, first number indicates how many columns width and second numer indicates how many gutters width the horizontal size spreads
 //
-//In documentation, "containing block width reference" is a value indicating the containing block for given selected elements. It can be in horizontal size units (for manual assigment) or a unitless integer. If last one, 0 means parent element is root element (which width is grid or page width), 1 means parent element is a descendant of root element you have already setted and so on. -1 means new element is descendant of last element setted.
+//DEFINITIONS USED THROUGHOUT THE DOCUMENTATION
+//
+//Horizontal size units: An integer in pixels to tell an horizontal size in pixels, or a two unitless integers to tell a horizontal size in "grid units" (see below). Examples are "480px" or "3 2".
+//
+//Grid units: two unitless integers. First one tells how many columns width's (without its gutters) the horizontal size takes up. Second one tells how many gutter width's the horizontal size takes up. For example, "3 2".
+//
+//Property horizontal size units: Horizontal size units, a string to manually force something or false to don't set anything. Examples are "480px", "3 2", "auto" or "false".
+//
 //
 //VARIABLES
-//@global bool set to true if you are using a grid design strategy, false otherwise.
+//
+//@global bool Set to true if you are using a grid design strategy, false otherwise.
 $grid-strategy: true !default;
 
-//@global px column width in pixels for the grid. Ignored if $grid-strategy is set to false
+//@global px Column width in pixels for the grid. Ignored if $grid-strategy is set to false.
 $column-width: 60px !default;
 
-//@global px gutter width in pixels for the grid. Ignored if $grid-strategy is set to false
+//@global px Gutter width in pixels for the grid. Ignored if $grid-strategy is set to false.
 $gutter-width: 20px !default;
 
-//@global int number of column for the grid. Ignored if $grid-strategy is set to false
+//@global int Number of columns of the grid. Ignored if $grid-strategy is set to false.
 $columns: 12 !default;
 
-//@global px layout width in pixels. Ignored if $grid-strategy is set to true
-$layout-max-width: 960px !default;
+//@global px Non-grid layout width in pixels. Ignored if $grid-strategy is set to true
+$design-max-width: 960px !default;
 
 //MIXINS
-//Set max-width of an element to grid-width or layout-max-width. This mixin is most of times applied to the element which will be the container for everything else, usually 'body', and it's used when you want to have a maximum resolution limit
 //
-//@param bool $em whether to set max-width in em's or not
-//@parem px $rfs relative font size to calculate em width. Only used if $em is set to true
+//Set the max-width property for an element to the grid width or the layout maximum width. This mixin is most of the times applied to an element that is the container of anything else (sometimes this is 'body'), and it is used when you want to have a maximum resolution limit. When the screen resolution is equal or higher than this value, all the dimensions set with fluidizer will have fluid dimensions but visually they exactly will take up the amount of pixels that you indicated. For lower resolutions, all the dimensions set with fluidizer will scale.
+//
+//@param bool $em Whether to set max-width in em units or not. Defaults to true.
+//@param px $rfs Relative font size used to calculate max-width in em. Only used if $em parameter is set to true.
 @mixin set-layout-max-width($em: true, $rfs: 16px) {
-   @if ($grid-strategy) {
-      $max-width: grid-width();
-   } @else {
-      $max-width: $layout-max-width;
-   }
+   $max-width: get-layout-max-width();
    @if ($em) {
       $max-width: ($max-width / $rfs) * 1em;
    }
    max-width: $max-width;
 }
 
-//Display the rules to create fluid horizontal sizes for a box
+//Display rules for horizontal fluid sizes
 //
-///@param px|list|string|bool $width width value. Horizontal size units, a string to manually force something or false to don't set
-///@param px|list|string|bool $padding padding value. Horizontal size units, a string to manually force something or false to don't set
-///@param px|list|string|bool $border border value. Horizontal size units, a string to manually force something or false to don't set
-///@param px|list|string|bool $margin margin value. Horizontal size units, a string to manually force something or false to don't set
-//@param int|px|list|bool $cbw-ref containing block width reference
-@mixin fluid-horizontal($width:false, $padding: false, $border: false, $margin: false, $cbw-ref) {
-   $cbw: get-cbw($cbw-ref);
+///@param px|list|string|bool $width Width value in property horizontal size units.
+///@param px|list|string|bool $padding Padding left and right values in property horizontal size units. One (the same for left and right) or a list of two (first for the left, second for the right).
+///@param px|list|string|bool $border Border left and right values in property horizontal size units. One (the same for left and right) or a list of two two (first for the left, second for the right).
+///@param px|list|string|bool $margin Margin left and right values in property horizontal size units. One (the same for left and right) or a list of two two (first for the left, second for the right).
+//@param px|list $cbw Containg block width in horizonal size units.
+@mixin fluid-horizontal($width:false, $padding: false, $border: false, $margin: false, $cbw: get-layout-max-width()) {
    @if ($width) {
-      @include percent-property(width, $width, $cbw);
+      @include display-property(width, $width, $cbw);
    }
    @if ($padding) {
       $left-right-padding: extract-left-right-values($padding);
-      @include percent-property(padding-left, nth($left-right-padding, 1), $cbw);
-      @include percent-property(padding-right, nth($left-right-padding, 2), $cbw);
+      @include display-property(padding-left, nth($left-right-padding, 1), $cbw);
+      @include display-property(padding-right, nth($left-right-padding, 2), $cbw);
    }
    @if ($border) {
       $left-right-border: extract-left-right-values($border);
-      @include percent-property(border-left-width, nth($left-right-border, 1), $cbw);
-      @include percent-property(border-right-width, nth($left-right-border, 2), $cbw);
+      @include display-property(border-left-width, nth($left-right-border, 1), $cbw);
+      @include display-property(border-right-width, nth($left-right-border, 2), $cbw);
    }
    @if ($margin) {
       $left-right-margin: extract-left-right-values($margin);
-      @include percent-property(margin-left, nth($left-right-margin, 1), $cbw);
-      @include percent-property(margin-right, nth($left-right-margin, 2), $cbw);
+      @include display-property(margin-left, nth($left-right-margin, 1), $cbw);
+      @include display-property(margin-right, nth($left-right-margin, 2), $cbw);
    }
 }
 
 //Display the rules to create a fluid column
 //
-///@param px|list|string|bool $width width value. Horizontal size units, a string to manually force something or false to don't set
-///@param px|list|string|bool $padding padding value. Horizontal size units, a string to manually force something or false to don't set
-///@param px|list|string|bool $border border value. Horizontal size units, a string to manually force something or false to don't set
-///@param px|list|string|bool $margin margin value. Horizontal size units, a string to manually force something or false to don't set
-//@param int|px|list $cbw-ref containing block width reference
-@mixin fluid-column($width, $padding: false, $border: false, $margin: false, $cbw-ref) {
+///@param px|list|string|bool $width Width value in property horizontal size units.
+///@param px|list|string|bool $padding Padding left and right values in property horizontal size units. One (the same for left and right) or a list of two (first for the left, second for the right).
+///@param px|list|string|bool $border Border left and right values in property horizontal size units. One (the same for left and right) or a list of two (first for the left, second for the right).
+///@param px|list|string|bool $margin Margin left and right values in property horizontal size units. One (the same for left and right) or a list of two (first for the left, second for the right).
+//@param px|list $cbw Containg block width in horizonal size units.
+@mixin fluid-column($width, $padding: false, $border: false, $margin: false, $cbw: get-layout-max-width()) {
    @include columnize();
-   @include fluid-horizontal($width, $padding, $border, $margin, $cbw-ref);
+   @include fluid-horizontal($width, $padding, $border, $margin, $cbw);
 }
 
-//FUNCTIONS
-//Returns a percent size since a size in pixels or grid units
+//For given property and value, display its rule with the value in percentage units if it's numeric.
 //
-//@param px|list $h-size horizontal size units to be transformed to percentage
-//@param int|px|list $cbw-ref containing block width reference
-//
-//@return % size transformed to percentage
-@function percent($h-size, $cbw-ref) {
-   $cbw: get-cbw($cbw-ref);
-   @if (type_of($h-size) == list) {
-      $h-size: grid-to-px($h-size);
-   }
-   @return px-to-percent($h-size, $cbw);
-}
-
-//Returns grid width in pixels
-//
-//@return px grid width in pixels
-@function grid-width() {
-   @return ($column-width + $gutter-width) * $columns;
-}
-
-//SYSTEM MIXINS
-//For given property and value, display rule with the value as percentage
-//
-//@param string $property property which the rule will be applied
-//@param px|list|string $value Horizontal size units or a string to manually force something
-//@param px $cbw containing block width in pixels
-@mixin percent-property($property, $value, $cbw) {
-   @if (type_of($value) == number) {
-      @if ($value == 0) {
-	 #{$property}: 0;
-      } @else if (unit($value) == px) {
-	 #{$property}: px-to-percent($value, $cbw);
+//@param string $property Property the rule will be applied on.
+//@param px|list|string $value A value in property horizontal size units.
+//@param px $cbw Containing block width in pixels
+@mixin display-property($property, $value, $cbw) {
+   @if ($value) {
+      @if (is-px-unit($value) or is-grid-unit($value)) {
+         #{$property}: percent($value, $cbw);
+      } @else {
+         #{$property}: unquote($value);
       }
-   } @else if (type_of($value) == list) {
-      $value: grid-to-px($value);
-      #{$property}: px-to-percent($value, $cbw);
-   } @else if (type_of($value) == string) {
-      #{$property}: unquote($value);
    }
 }
 
-//Display minimal styles to make a box a column
+//Display minimal styles to show a box like a column
 @mixin columnize() {
    float: left;
 }
 
-//SYSTEM FUNCTIONS
-//Transform grid units to percentage
+
+//FUNCTIONS
 //
-//@param list $grid-size grid units
+//Returns a percentage size from value in horizontal size units
 //
-//@return px grid units transformed to pixels
-@function grid-to-px($grid-size) {
-   @return ((nth($grid-size, 1) * $column-width) + (nth($grid-size, 2) * $gutter-width));
+//@param px|list $h-size A horizontal size units value.
+//@param px|list $cbw Containg block width in horizonal size units.
+//
+//@return % The size transformed to percentage.
+@function percent($h-size, $cbw) {
+   $h-size-px: horizontal-to-px($h-size);
+   @return px-to-percent($h-size-px, $cbw);
 }
 
-//Transform a size in pixels to percentage
+//Returns the grid width in pixels.
 //
-//@param px $px-size a size in pixels
-//@param px $cbw containing block width in pixels used to referenciate the percentage to calculate
-//
-//@return % size transformed to percentage
-@function px-to-percent($px-size, $cbw) {
-   @return ($px-size / $cbw) * 100%;
+//@return px The grid width in pixels.
+@function grid-width() {
+   @return ($column-width + $gutter-width) * $columns;
 }
 
-//Get containing block width in pixels since a containing block width reference
+//Returns the layout maximum width, discerning between a grid design and a non-grid one.
 //
-//@param int|px|list $cbw-ref containing block width reference
-//
-//@return px containing block width in pixels
-@function get-cbw($cbw-ref) {
-   @if (type_of($cbw-ref) == list) {
-      @return grid-to-px($cbw-ref);
-   } @else if (type_of($cbw-ref) == number) {
-      @if (unit($cbw-ref) == px) {
-	 @return $cbw-ref;
-      }
+//@return px Layout maximum width in pixels.
+@function get-layout-max-width() {
+   @if ($grid-strategy) {
+      @return grid-width();
+   } @else {
+      @return $design-max-width;
    }
 }
 
-//For a given value representing both left and right size, return a list of two elements, being first one left value and second one right value
+//For a given value representing both left and right size, return a list of two elements, being first one left value and second one right value.
 //
-//@param px|list|string $value one (the same for left and right) or two (first is left, second is right) horizontal size units or string to manually indicate something
-//@param px $cbw containing block width
+//@param px|list|string $value One (the same for left and right) or two (first is left, second is right) property horizontal size units.
+//@param px $cbw Containing block width in pixels
 //
-//@return list left and right values
-@function  extract-left-right-values($value) {
+//@return list Left and right values discerned.
+@function extract-left-right-values($value) {
    $value-left: false;
    $value-right: false;
-   @if (type_of($value) == number) {
-      @if (unit($value) == px or $value == 0) {
-	 $value-left: $value;
-	 $value-right: $value;
-      }
-   } @else if (type_of($value) == list) {
-      @if (type_of(nth($value, 1)) == number and type_of(nth($value, 2)) == number) {
-	 @if (unit(nth($value, 1)) == px and unit(nth($value, 2)) == px) {
-	    $value-left: nth($value, 1);
-	    $value-right: nth($value, 2);
-	 } @else if (unitless(nth($value, 1)) and unitless(nth($value, 2))) {
-	    $value: grid-to-px(nth($value, 1) nth($value, 2));
-	    $value-left: $value;
-	    $value-right: $value;
-	 }
-      } @else {
-	 $value-left: nth($value, 1);
-	 $value-right: nth($value, 2);
-      }
-   } @else if (type_of($value) == string) {
+   @if (type_of($value) != list or is-grid-unit($value) and is-double-zero($value) == false) {
       $value-left: $value;
       $value-right: $value;
+   } @else {
+      $value-left: nth($value, 1);
+      $value-right: nth($value, 2);
    }
    @return ($value-left, $value-right);
+}
+
+//Converts a pixels value to percentage units.
+//
+//@param px $value A value in pixels.
+//@param px $cbw Containing block width in horizontal size units.
+//
+//@return % Value converted to percentage.
+@function px-to-percent($value, $cbw) {
+   $cbw-px: horizontal-to-px($cbw);
+   @return ($value / $cbw-px) * 100%;
+}
+
+//Converts a horizontal size unit value to pixels.
+//
+//@param px|list A value in horizontal size units.
+//
+//@return % Value converted to pixels.
+@function horizontal-to-px($value) {
+   @if (is-grid-unit($value)) {
+      @return grid-to-px($value);
+   } @else if (is-px-unit($value)) {
+      @return $value;
+   }
+}
+
+//Converts a value in grid units to percentage.
+//
+//@param list $value A value in grid units.
+//
+//@return px Value converted to pixels.
+@function grid-to-px($value) {
+   @return ((nth($value, 1) * $column-width) + (nth($value, 2) * $gutter-width));
+}
+
+//Check whether a value is expressed in grid units or not.
+//
+//@param mixed $value The value to check.
+//
+//@return bool Whether the value is expressed in grid units or not
+@function is-grid-unit($value) {
+   @if (type_of($value) == list) {
+      @if (length($value) == 2) {
+         @if (type_of(nth($value, 1)) == number and type_of(nth($value, 2)) == number) {
+            @if (unitless(nth($value, 1)) and unitless(nth($value, 2))) {
+               @return true;
+            }
+         }
+      }
+   }
+   @return false;
+}
+
+//Check whether a value is expressed in pixels units or not.
+//
+//@param mixed $value The value to check.
+//
+//@return bool Whether the value is expressed in pixel units or not.
+@function is-px-unit($value) {
+   @if (type_of($value) == number) {
+      @if (unit($value) == px) {
+         @return true;
+      }
+   }
+   @return false;
+}
+
+//Check whether a value is a list of two zeros or not.
+//
+//@param mixed $value The value to check.
+//
+//@return bool Whether the value is a list of two zeros or not.
+@function is-double-zero($value) {
+   @if (type_of($value) == list) {
+      @if (length($value) == 2) {
+         @if (nth($value, 1) == 0 and nth($value, 2) == 0) {
+            @return true;
+         }
+      }
+   }
+   @return false;
 }
