@@ -1,0 +1,8 @@
+2012-06-03  Marc Busqué  <marc@lamarciana.com>
+
+* Version 2.0. Visually reference removed, because if used it introduced a lot
+of CSS specifity. A lot of refactoring and naming conventions changed.
+
+2011-11-06  Marc Busqué  <marc@lamarciana.com>
+
+* Initial release
