@@ -67,24 +67,16 @@ $design-max-width: 960px !default;
 ///@param px|list|string|bool $margin Margin left and right values in property horizontal size units. One (the same for left and right) or a list of two two (first for the left, second for the right).
 //@param px|list $cbw Containg block width in horizonal size units.
 @mixin fluid-horizontal($width:false, $padding: false, $border: false, $margin: false, $cbw: get-layout-max-width()) {
-   @if ($width) {
-      @include display-property(width, $width, $cbw);
-   }
-   @if ($padding) {
-      $left-right-padding: extract-left-right-values($padding);
-      @include display-property(padding-left, nth($left-right-padding, 1), $cbw);
-      @include display-property(padding-right, nth($left-right-padding, 2), $cbw);
-   }
-   @if ($border) {
-      $left-right-border: extract-left-right-values($border);
-      @include display-property(border-left-width, nth($left-right-border, 1), $cbw);
-      @include display-property(border-right-width, nth($left-right-border, 2), $cbw);
-   }
-   @if ($margin) {
-      $left-right-margin: extract-left-right-values($margin);
-      @include display-property(margin-left, nth($left-right-margin, 1), $cbw);
-      @include display-property(margin-right, nth($left-right-margin, 2), $cbw);
-   }
+   @include display-property(width, $width, $cbw);
+   $left-right-padding: extract-left-right-values($padding);
+   @include display-property('padding-left', nth($left-right-padding, 1), $cbw);
+   @include display-property('padding-right', nth($left-right-padding, 2), $cbw);
+   $left-right-border: extract-left-right-values($border);
+   @include display-property('border-left-width', nth($left-right-border, 1), $cbw);
+   @include display-property('border-right-width', nth($left-right-border, 2), $cbw);
+   $left-right-margin: extract-left-right-values($margin);
+   @include display-property('margin-left', nth($left-right-margin, 1), $cbw);
+   @include display-property('margin-right', nth($left-right-margin, 2), $cbw);
 }
 
 //Display the rules to create a fluid column
@@ -119,15 +111,14 @@ $design-max-width: 960px !default;
    float: left;
 }
 
-
 //FUNCTIONS
 //
-//Returns a percentage size from value in horizontal size units
+//Converts horizontal size units to percentage.
 //
-//@param px|list $h-size A horizontal size units value.
+//@param px|list $value A value in horizonal size units.
 //@param px|list $cbw Containg block width in horizonal size units.
 //
-//@return % The size transformed to percentage.
+//@return % The value converted to percentage.
 @function percent($h-size, $cbw) {
    $h-size-px: horizontal-to-px($h-size);
    @return px-to-percent($h-size-px, $cbw);
@@ -154,7 +145,6 @@ $design-max-width: 960px !default;
 //For a given value representing both left and right size, return a list of two elements, being first one left value and second one right value.
 //
 //@param px|list|string $value One (the same for left and right) or two (first is left, second is right) property horizontal size units.
-//@param px $cbw Containing block width in pixels
 //
 //@return list Left and right values discerned.
 @function extract-left-right-values($value) {

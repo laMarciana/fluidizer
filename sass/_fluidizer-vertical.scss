@@ -25,7 +25,10 @@
 //
 //Baseline units: A unitless integer. It tells how many baseline heights the vertical size takes up.
 //
+//Property vertical size units: Vertical size units, a string to manually force something or false to don't set it.
+
 //VARIABLES
+//
 //@global px Baseline height in pixels.
 $baseline: 18px !default;
 
@@ -33,139 +36,117 @@ $baseline: 18px !default;
 $initial-rfs: 16px !default;
 
 //MIXINS
-//Display the rules to create a vertical fluid box
+//Display rules for vertical fluid sizes.
 //
-///@param px|int|string|bool $line-height line-height value. In vertical size units, a string to manually indicate something or false to don't set it
-///@param px|int|string|bool $height height value. In vertical size units, a string to manually indicate something, or false to don't set it
-///@param px|int|string|bool $padding padding value. In vertical size units, a string to manually indicate something, or false to don't set it
-///@param px|int|string|bool $boder boder value. In vertical size units, a string to manually indicate something, or false to don't set it
-///@param px|int|string|bool $margin margin value. In vertical size units, a string to manually indicate something, or false to don't set it
-@mixin fluid-vertical($line-height: false, $height:false, $padding: false, $border: false, $margin: false, $rfs-ref: $initial-rfs) {
-   $rfs: _get-rfs($rfs-ref);
-   @if ($line-height) {
-      @include _em-property(line-height, $line-height, $rfs);
-   }
-   @if ($height) {
-      @include _em-property(height, $height, $rfs);
-   }
-   @if ($padding) {
-      $left-right-padding: _extract-top-bottom-values($padding);
-      @include _em-property("padding-top", nth($left-right-padding, 1), $rfs);
-      @include _em-property("padding-bottom", nth($left-right-padding, 2), $rfs);
-   }
-   @if ($border) {
-      $left-right-border: _extract-top-bottom-values($border);
-      @include _em-property("border-top-width", nth($left-right-border, 1), $rfs);
-      @include _em-property("border-bottom-width", nth($left-right-border, 2), $rfs);
-   }
-   @if ($margin) {
-      $left-right-margin: _extract-top-bottom-values($margin);
-      @include _em-property("margin-top", nth($left-right-margin, 1), $rfs);
-      @include _em-property("margin-bottom", nth($left-right-margin, 2), $rfs);
+///@param px|int|string|bool $line-height Line-height value in property vertical size units.
+///@param px|int|string|bool $height Height value in property vertical size units.
+///@param px|int|string|bool $padding Padding top and bottom values in vertical size units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
+///@param px|int|string|bool $border Border top and bottom values in vertical size units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
+///@param px|int|string|bool $margin Margin top and bottom values in vertical size units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
+//@param px|int $rfs Relevant font size.
+@mixin fluid-vertical($line-height: false, $height: false, $padding: false, $border: false, $margin: false, $rfs: $initial-rfs) {
+   @include display-vertical-property(line-height, $line-height, $rfs);
+   @include display-vertical-property(height, $height, $rfs);
+   $top-bottom-padding: extract-top-bottom-values($padding);
+   @include display-vertical-property('padding-top', nth($top-bottom-padding, 1), $rfs);
+   @include display-vertical-property('padding-bottom', nth($top-bottom-padding, 2), $rfs);
+   $top-bottom-border: extract-top-bottom-values($border);
+   @include display-vertical-property('border-top-width', nth($top-bottom-border, 1), $rfs);
+   @include display-vertical-property('border-bottom-width', nth($top-bottom-border, 2), $rfs);
+   $top-bottom-margin: extract-top-bottom-values($margin);
+   @include display-vertical-property('margin-top', nth($top-bottom-margin, 1), $rfs);
+   @include display-vertical-property('margin-bottom', nth($top-bottom-margin, 2), $rfs);
+}
+
+//For given property and value, display its rule with the value in em units if it's numeric.
+//
+//@param string $property Property the rule will be applied on.
+//@param px|list|string $value A value in property vertical size units.
+//@param px $rfs Relevant font size in vertical size units.
+@mixin display-vertical-property($property, $value, $rfs) {
+   @if ($value) {
+      @if (is-px-unit($value) or is-baseline-unit($value)) {
+         #{$property}: em($value, $rfs);
+      } @else {
+         #{$property}: unquote($value);
+      }
    }
 }
 
 //FUNCTIONS
-//Return an em size since a value in vertical size units
 //
-//@param px|int $v-size size to be transformed to em's. In vertical size units
-//@param int|px $rfs-ref relevant font size reference
+//Converts from vertical size units to em.
 //
-//@return em size transformed to em's
-@function em($v-size, $rfs-ref: $initial-rfs) {
-   @if (unitless($v-size)) {
-      $v-size: _px-from-baseline($v-size);
+//@param px|int $value A value in vertical size units
+//@param int|px $rfs Relevant font size in vertical size units.
+//
+//@return em The value converted to em's.
+@function em($value, $rfs: $initial-rfs) {
+   $v-size-px = vertical-to-px($value);
+   @return px-to-em($v-size-px, $rfs);
+}
+
+//Converts a px value to em.
+//
+//@param px $value A value in pixels.
+//@param px $rfs Relevant font size in vertical size units.
+//
+//@return em The value converted to em's.
+@function px-to-em($value, $rfs) {
+   $rfs-px: vertical-to-px($rfs);
+   @return ($px-size / $rfs-px) * 1em;
+}
+
+//Converts a vertical size units value to pixels.
+//
+//@param px $value A value in vertical size units.
+//
+//@return em The value converted to pixels.
+@function vertical-to-px($value) {
+   @if (is-baseline-unit($value)) {
+      @return baseline-to-px($value);
+   } @else if (is-px-unit($valye)) {
+      @return $value;
    }
-   $rfs: _get-rfs($rfs-ref);
-   $px-size: _em-from-px($v-size, $rfs);
-   @return $px-size;
 }
 
-//SYSTEM MIXINS
-//For given property and value, display rule with the value in em's
+//Converts baseline units to pixels.
 //
-//@param string $property the property which the rule will be applied
-//@param px|list|string $value Horizontal size units or a string to manually force something
-//@param px $rfs relevant font size
-@mixin _em-property($property, $value, $rfs) {
-   @if (type_of($value) == number) {
-      @if ($value == 0) {
-	 #{$property}: 0;
-      } @else if (unit($value) == px) {
-	 #{$property}: _em-from-px($value, $rfs);
-      } @else if (unitless($value)) {
-	 $value: _px-from-baseline($value);
-	 #{$property}: _em-from-px($value, $rfs);
-      }
-   } @else if (type_of($value) == string) {
-      #{$property}: unquote($value);
-   }
-}
-
-//SYSTEM FUNCTIONS
-//Transform from baseline units to pixel
+//@param int $value A value in baseline units.
 //
-//@param int $baseline-size baseline units
-//
-//@return px baseline units transformed to pixels
-@function _px-from-baseline($baseline-size) {
-   @return $baseline-size * $baseline;
-}
-
-//Transform a px size to em
-//
-//@param px $px-size a size in pixels
-//@param px $rfs relevant font size
-//
-//@return em size transformed to em's
-@function _em-from-px($px-size, $rfs) {
-   @return ($px-size / $rfs) * 1em;
+//@return px The value converted to pixels.
+@function baseline-to-px($value) {
+   @return $value * $baseline;
 }
 
 //For a given value representing both top and bottom size, return a list of two elements, being first one top value and second one bottom value
 //
-//@param px|list|string $value one (the same for top and bottom) or two (first is top, second is bottom) vertical size units or string to manually indicate something
-//@param px $rfs relevant font size
+//@param px|list|string $value One (the same for top and bottom) or two (first is top, second is bottom) peroperty vertical size units.
 //
-//@return list list of top and bottom values
-@function _extract-top-bottom-values($value) {
+//@return list Top and bottom values discerned.
+@function extract-top-bottom-values($value) {
    $value-top: false;
    $value-bottom: false;
-   @if (type_of($value) == number) {
-      @if (unit($value) == px or $value == 0) {
-	 $value-top: $value;
-	 $value-bottom: $value;
-      } @else if (unitless($value)) {
-	 $value: _px-from-baseline($value);
-	 $value-top: $value;
-	 $value-bottom: $value;
-      }
-   } @else if (type_of($value) == list) {
-      $value-top: nth($value, 1);
-      $value-bottom: nth($value, 2);
-   } @else if (type_of($value) == string) {
+   @if (type_of($value) != list) {
       $value-top: $value;
       $value-bottom: $value;
+   } @else {
+      $value-top: nth($value, 1);
+      $value-bottom: nth($value, 2);
    }
    @return ($value-top, $value-bottom);
 }
 
-//Get relevant font size in pixels since a relevant font size reference
+//Check whether a value is expressed in baseline units or not.
 //
-//@param int|px $rfs-ref relevant font size reference
+//@param mixed $value The value to check.
 //
-//@return px relevant font size in pixels
-@function _get-rfs($rfs-ref) {
-   @if (type_of($rfs-ref) == number) {
-      @if (unit($rfs-ref) == px) {
-	 @return $rfs-ref;
-      } @else if (unitless($rfs-ref)) {
-	 @if ($rfs-ref == -1) {
-	    $last-index: length($rfs-history);
-	    @return nth($rfs-history, $last-index);
-	 } @else {
-	    @return nth($rfs-history, $rfs-ref + 1);
-	 }
+//@return bool Whether the value is expressed in baseline units or not.
+@function is-baseline-unit($value) {
+   @if (type_of($value) == number) {
+      @if (unitless($value)) {
+         @return true;
       }
+      @return false;
    }
 }
