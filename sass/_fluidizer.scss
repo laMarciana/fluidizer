@@ -21,17 +21,17 @@
 //
 //DEFINITIONS USED THROUGHOUT THE DOCUMENTATION
 //
-//Horizontal size units: An integer in pixels to tell an horizontal size in pixels, or a two unitless integers to tell a horizontal size in "grid units" (see below). Examples are "480px" or "3 2".
+//x units: An integer in pixels to tell an horizontal size in pixels, or two unitless floating-point numbers to tell an horizontal size in "grid units" (see below). Examples are "480px" or "3 2".
 //
-//Grid units: Two unitless integers. First one tells how many columns width's (without its gutters) the horizontal size takes up. Second one tells how many gutter width's the horizontal size takes up. For example, "3 2".
+//Grid units: Two unitless floating-point numbers. First one tells how many columns width's (without its gutters) the horizontal size takes up. Second one tells how many gutter width's the horizontal size takes up. For example, "3 2".
 //
-//Property horizontal size units: Horizontal size units, a string to manually force something or false to don't set anything. Examples are "480px", "3 2", "auto" or "false".
+//Property x units: x units, a string to manually force something or false to don't set anything. Examples are "480px", "3 2", "auto" or "false".
 //
-//Vertical size units: An integer in pixels to tell a vertical size in pixels, or an unitless integer to indicate a vertical size in baseline units (see below).
+//y units: An integer in pixels to tell a vertical size in pixels, or an unitless floating-point number to tell a vertical size in baseline units (see below).
 //
-//Baseline units: A unitless integer. It tells how many baseline heights the vertical size takes up.
+//Baseline units: A unitless floating-point number. It tells how many baseline heights the vertical size takes up.
 //
-//Property vertical size units: Vertical size units, a string to manually force something or false to don't set it.
+//Property y units: y units, a string to manually force something or false to don't set it.
 //
 //VARIABLES
 //
@@ -58,7 +58,7 @@ $initial-rfs: 16px !default;
 
 //MIXINS
 //
-//Set the max-width property for an element to the grid width or the layout maximum width. This mixin is most of the times applied to an element that is the container of anything else (sometimes this is 'body'), and it is used when you want to have a maximum resolution limit. When the screen resolution is equal or higher than this value, all the dimensions set with fluidizer will have fluid dimensions but visually they exactly will take up the amount of pixels that you indicated. For lower resolutions, all the dimensions set with fluidizer will scale.
+//Set the max-width property for an element to the grid width or the design maximum width. This mixin is most of the times applied to an element that is the container of anything else (sometimes this is 'body'), and it is used when you want to have a maximum resolution limit. When the screen resolution is equal or higher than this value, all the x dimensions set with fluidizer will have percentage dimensions but visually they exactly will take up the amount of pixels that you indicated. For lower resolutions, all the x dimensions set with fluidizer will scale.
 //
 //@param bool $em Whether to set max-width in em units or not. Defaults to true.
 //@param px $rfs Relative font size used to calculate max-width in em. Only used if $em parameter is set to true.
@@ -72,64 +72,64 @@ $initial-rfs: 16px !default;
 
 //Display rules for horizontal fluid sizes
 //
-///@param px|list|string|bool $width Width value in property horizontal size units.
-///@param px|list|string|bool $padding Padding left and right values in property horizontal size units. One (the same for left and right) or a list of two (first for the left, second for the right).
-///@param px|list|string|bool $border Border left and right values in property horizontal size units. One (the same for left and right) or a list of two two (first for the left, second for the right).
-///@param px|list|string|bool $margin Margin left and right values in property horizontal size units. One (the same for left and right) or a list of two two (first for the left, second for the right).
-//@param px|list $cbw Containg block width in horizonal size units.
-@mixin fluid-horizontal($width:false, $padding: false, $border: false, $margin: false, $cbw: get-layout-max-width()) {
-   @include display-property(width, $width, $cbw);
+///@param px|list|string|bool $width Width value in property x units.
+///@param px|list|string|bool $padding Padding left and right values in property x units. One (the same for left and right) or a list of two (first for the left, second for the right).
+///@param px|list|string|bool $border Border left and right values in property x units. One (the same for left and right) or a list of two two (first for the left, second for the right).
+///@param px|list|string|bool $margin Margin left and right values in property x units. One (the same for left and right) or a list of two two (first for the left, second for the right).
+//@param px|list $cbw Containing block width in x units.
+@mixin fluid-x($width:false, $padding: false, $border: false, $margin: false, $cbw: get-layout-max-width()) {
+   @include display-x-property(width, $width, $cbw);
    $left-right-padding: extract-left-right-values($padding);
-   @include display-property('padding-left', nth($left-right-padding, 1), $cbw);
-   @include display-property('padding-right', nth($left-right-padding, 2), $cbw);
+   @include display-x-property('padding-left', nth($left-right-padding, 1), $cbw);
+   @include display-x-property('padding-right', nth($left-right-padding, 2), $cbw);
    $left-right-border: extract-left-right-values($border);
-   @include display-property('border-left-width', nth($left-right-border, 1), $cbw);
-   @include display-property('border-right-width', nth($left-right-border, 2), $cbw);
+   @include display-x-property('border-left-width', nth($left-right-border, 1), $cbw);
+   @include display-x-property('border-right-width', nth($left-right-border, 2), $cbw);
    $left-right-margin: extract-left-right-values($margin);
-   @include display-property('margin-left', nth($left-right-margin, 1), $cbw);
-   @include display-property('margin-right', nth($left-right-margin, 2), $cbw);
+   @include display-x-property('margin-left', nth($left-right-margin, 1), $cbw);
+   @include display-x-property('margin-right', nth($left-right-margin, 2), $cbw);
 }
 
 //Display the rules to create a fluid column
 //
-///@param px|list|string|bool $width Width value in property horizontal size units.
-///@param px|list|string|bool $padding Padding left and right values in property horizontal size units. One (the same for left and right) or a list of two (first for the left, second for the right).
-///@param px|list|string|bool $border Border left and right values in property horizontal size units. One (the same for left and right) or a list of two (first for the left, second for the right).
-///@param px|list|string|bool $margin Margin left and right values in property horizontal size units. One (the same for left and right) or a list of two (first for the left, second for the right).
-//@param px|list $cbw Containg block width in horizonal size units.
+///@param px|list|string|bool $width Width value in property x units.
+///@param px|list|string|bool $padding Padding left and right values in property x units. One (the same for left and right) or a list of two (first for the left, second for the right).
+///@param px|list|string|bool $border Border left and right values in property x units. One (the same for left and right) or a list of two (first for the left, second for the right).
+///@param px|list|string|bool $margin Margin left and right values in property x units. One (the same for left and right) or a list of two (first for the left, second for the right).
+//@param px|list $cbw Containing block width in x units.
 @mixin fluid-column($width, $padding: false, $border: false, $margin: false, $cbw: get-layout-max-width()) {
    @include columnize();
-   @include fluid-horizontal($width, $padding, $border, $margin, $cbw);
+   @include fluid-x($width, $padding, $border, $margin, $cbw);
 }
 
 //Display rules for vertical fluid sizes.
 //
-///@param px|int|string|bool $line-height Line-height value in property vertical size units.
-///@param px|int|string|bool $height Height value in property vertical size units.
-///@param px|int|string|bool $padding Padding top and bottom values in vertical size units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
-///@param px|int|string|bool $border Border top and bottom values in vertical size units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
-///@param px|int|string|bool $margin Margin top and bottom values in vertical size units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
-//@param px|int $rfs Relevant font size.
-@mixin fluid-vertical($line-height: false, $height: false, $padding: false, $border: false, $margin: false, $rfs: $initial-rfs) {
-   @include display-vertical-property(line-height, $line-height, $rfs);
-   @include display-vertical-property(height, $height, $rfs);
+///@param px|int|string|bool $line-height Line-height value in property y units.
+///@param px|int|string|bool $height Height value in property y units.
+///@param px|int|string|bool $padding Padding top and bottom values in y units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
+///@param px|int|string|bool $border Border top and bottom values in y units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
+///@param px|int|string|bool $margin Margin top and bottom values in y units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
+//@param px|int $rfs Relevant font size in y units.
+@mixin fluid-y($line-height: false, $height: false, $padding: false, $border: false, $margin: false, $rfs: $initial-rfs) {
+   @include display-y-property(line-height, $line-height, $rfs);
+   @include display-y-property(height, $height, $rfs);
    $top-bottom-padding: extract-top-bottom-values($padding);
-   @include display-vertical-property('padding-top', nth($top-bottom-padding, 1), $rfs);
-   @include display-vertical-property('padding-bottom', nth($top-bottom-padding, 2), $rfs);
+   @include display-y-property('padding-top', nth($top-bottom-padding, 1), $rfs);
+   @include display-y-property('padding-bottom', nth($top-bottom-padding, 2), $rfs);
    $top-bottom-border: extract-top-bottom-values($border);
-   @include display-vertical-property('border-top-width', nth($top-bottom-border, 1), $rfs);
-   @include display-vertical-property('border-bottom-width', nth($top-bottom-border, 2), $rfs);
+   @include display-y-property('border-top-width', nth($top-bottom-border, 1), $rfs);
+   @include display-y-property('border-bottom-width', nth($top-bottom-border, 2), $rfs);
    $top-bottom-margin: extract-top-bottom-values($margin);
-   @include display-vertical-property('margin-top', nth($top-bottom-margin, 1), $rfs);
-   @include display-vertical-property('margin-bottom', nth($top-bottom-margin, 2), $rfs);
+   @include display-y-property('margin-top', nth($top-bottom-margin, 1), $rfs);
+   @include display-y-property('margin-bottom', nth($top-bottom-margin, 2), $rfs);
 }
 
 //For given property and value, display its rule with the value in percentage units if it's numeric.
 //
 //@param string $property Property the rule will be applied on.
-//@param px|list|string $value A value in property horizontal size units.
-//@param px $cbw Containing block width in pixels
-@mixin display-property($property, $value, $cbw) {
+//@param px|list|string $value A value in property x units.
+//@param px $cbw Containing block width in x units.
+@mixin display-x-property($property, $value, $cbw) {
    @if ($value) {
       @if (is-px-unit($value) or is-grid-unit($value)) {
          #{$property}: percent($value, $cbw);
@@ -142,9 +142,9 @@ $initial-rfs: 16px !default;
 //For given property and value, display its rule with the value in em units if it's numeric.
 //
 //@param string $property Property the rule will be applied on.
-//@param px|list|string $value A value in property vertical size units.
-//@param px $rfs Relevant font size in vertical size units.
-@mixin display-vertical-property($property, $value, $rfs) {
+//@param px|list|string $value A value in property y units.
+//@param px $rfs Relevant font size in y units.
+@mixin display-y-property($property, $value, $rfs) {
    @if ($value) {
       @if (is-px-unit($value) or is-baseline-unit($value)) {
          #{$property}: em($value, $rfs);
@@ -161,45 +161,45 @@ $initial-rfs: 16px !default;
 
 //FUNCTIONS
 //
-//Converts horizontal size units to percentage.
+//Converts x units to percentage.
 //
-//@param px|list $value A value in horizonal size units.
-//@param px|list $cbw Containg block width in horizonal size units.
+//@param px|list $value A value in x units.
+//@param px|list $cbw Containing block width in x units.
 //
 //@return % The value converted to percentage.
-@function percent($h-size, $cbw) {
-   $h-size-px: horizontal-to-px($h-size);
-   @return px-to-percent($h-size-px, $cbw);
+@function percent($value, $cbw) {
+   $value-px: x-to-px($value);
+   @return px-to-percent($value-px, $cbw);
 }
 
-//Converts from vertical size units to em.
+//Converts y units to em.
 //
-//@param px|int $value A value in vertical size units
-//@param int|px $rfs Relevant font size in vertical size units.
+//@param px|int $value A value in y units.
+//@param int|px $rfs Relevant font size in y units.
 //
 //@return em The value converted to em's.
 @function em($value, $rfs: $initial-rfs) {
-   $v-size-px = vertical-to-px($value);
-   @return px-to-em($v-size-px, $rfs);
+   $value-px: y-to-px($value);
+   @return px-to-em($value-px, $rfs);
 }
 
-//Converts a pixels value to percentage units.
+//Converts pixels to percentage.
 //
 //@param px $value A value in pixels.
-//@param px $cbw Containing block width in horizontal size units.
+//@param px $cbw Containing block width in x units.
 //
-//@return % Value converted to percentage.
+//@return % The value converted to percentage.
 @function px-to-percent($value, $cbw) {
-   $cbw-px: horizontal-to-px($cbw);
+   $cbw-px: x-to-px($cbw);
    @return ($value / $cbw-px) * 100%;
 }
 
-//Converts a horizontal size unit value to pixels.
+//Converts x units to pixels.
 //
-//@param px|list A value in horizontal size units.
+//@param px|list A value in x units.
 //
-//@return % Value converted to pixels.
-@function horizontal-to-px($value) {
+//@return % The value converted to pixels.
+@function x-to-px($value) {
    @if (is-grid-unit($value)) {
       @return grid-to-px($value);
    } @else if (is-px-unit($value)) {
@@ -207,35 +207,35 @@ $initial-rfs: 16px !default;
    }
 }
 
-//Converts a value in grid units to percentage.
+//Converts grid units to percentage.
 //
 //@param list $value A value in grid units.
 //
-//@return px Value converted to pixels.
+//@return px The alue converted to pixels.
 @function grid-to-px($value) {
    @return ((nth($value, 1) * $column-width) + (nth($value, 2) * $gutter-width));
 }
 
-//Converts a px value to em.
+//Converts pixels to em.
 //
 //@param px $value A value in pixels.
-//@param px $rfs Relevant font size in vertical size units.
+//@param px $rfs Relevant font size in y units.
 //
 //@return em The value converted to em's.
 @function px-to-em($value, $rfs) {
-   $rfs-px: vertical-to-px($rfs);
-   @return ($px-size / $rfs-px) * 1em;
+   $rfs-px: y-to-px($rfs);
+   @return ($value / $rfs-px) * 1em;
 }
 
-//Converts a vertical size units value to pixels.
+//Converts y units to pixels.
 //
-//@param px $value A value in vertical size units.
+//@param px $value A value in y units.
 //
 //@return em The value converted to pixels.
-@function vertical-to-px($value) {
+@function y-to-px($value) {
    @if (is-baseline-unit($value)) {
       @return baseline-to-px($value);
-   } @else if (is-px-unit($valye)) {
+   } @else if (is-px-unit($value)) {
       @return $value;
    }
 }
@@ -271,7 +271,7 @@ $initial-rfs: 16px !default;
 //
 //@param mixed $value The value to check.
 //
-//@return bool Whether the value is expressed in grid units or not
+//@return bool Whether the value is expressed in grid units or not.
 @function is-grid-unit($value) {
    @if (type_of($value) == list) {
       @if (length($value) == 2) {
@@ -285,7 +285,7 @@ $initial-rfs: 16px !default;
    @return false;
 }
 
-//Check whether a value is expressed in pixels units or not.
+//Check whether a value is expressed in pixels units or not. It is not checked if the value is an integer to allow CSS hacks that use fractions of pixels.
 //
 //@param mixed $value The value to check.
 //
@@ -331,7 +331,7 @@ $initial-rfs: 16px !default;
 
 //For a given value representing both left and right size, return a list of two elements, being first one left value and second one right value.
 //
-//@param px|list|string $value One (the same for left and right) or two (first is left, second is right) property horizontal size units.
+//@param px|list|string $value One (the same for left and right) or two (first is left, second is right) property x units.
 //
 //@return list Left and right values discerned.
 @function extract-left-right-values($value) {
@@ -349,7 +349,7 @@ $initial-rfs: 16px !default;
 
 //For a given value representing both top and bottom size, return a list of two elements, being first one top value and second one bottom value
 //
-//@param px|list|string $value One (the same for top and bottom) or two (first is top, second is bottom) peroperty vertical size units.
+//@param px|list|string $value One (the same for top and bottom) or two (first is top, second is bottom) property y units.
 //
 //@return list Top and bottom values discerned.
 @function extract-top-bottom-values($value) {
