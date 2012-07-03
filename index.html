@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Fluidizer : Sass tool intended to help in the development of 100% fluid web sites (including fluid grids and vertical rhythm designs)." />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Fluidizer</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/laMarciana/fluidizer">View on GitHub</a>
+
+          <h1 id="project_title">Fluidizer</h1>
+          <h2 id="project_tagline">Sass tool intended to help in the development of 100% fluid web sites (including fluid grids and vertical rhythm designs).</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/laMarciana/fluidizer/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/laMarciana/fluidizer/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Fluidizer</h1>
+
+<p>Fluidizer is a Sass tool intended to help in the development of 100% fluid web sites, including fluid grid and fluid vertical rhythm designs. It allows developers to think in pixels or grid and baseline units, and to get automatically percentage values for horizontal sizes and em values for vertical ones.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>Provide pixel size and containing block's width, get percentage size.</li>
+<li>For grids, provide the amount of columns and gutters a size takes up and its containing block width, get percentage size.</li>
+<li>Provide pixel size and the relevant font size, get em size.</li>
+<li>For baseline rhythm, provide the amount of baseline increments a size takes up and its relevant font size, get em size.</li>
+</ul><h2>Setup</h2>
+
+<p>Fluidizer requires you are working with <a href="http://sass-lang.com/" title="Sass homepage">Sass</a>.</p>
+
+<p>With git, to get latest stable version:</p>
+
+<pre><code>git clone https://github.com/laMarciana/fluidizer.git
+</code></pre>
+
+<p>Otherwise, download it from:</p>
+
+<pre><code>https://github.com/laMarciana/fluidizer/zipball/master
+</code></pre>
+
+<p>Put the file <code>sass/_fluidizer.scss</code> in your sass directory and import it from your sass style-sheet:</p>
+
+<pre><code>@import fluidizer;
+</code></pre>
+
+<h2>How does it work?</h2>
+
+<h3>Horizontal layout</h3>
+
+<h4>Configuring design properties</h4>
+
+<p>For grid based layouts, set:</p>
+
+<pre><code>$grid-strategy: true;
+$column-width: 60px; //your grid's column width
+$gutter-width: 20px; //your grid's gutter width
+$columns: 12; //your grid's number of columns
+</code></pre>
+
+<p>For non-grid based layouts, set:</p>
+
+<pre><code>$grid-strategy: false;
+$design-width: 960px; //your design's width
+</code></pre>
+
+<h4>The overall container</h4>
+
+<p>Optionally, set the wrapper element that will contain your whole layout. That way, when the screen resolution is equal or higher than this value, all the horizontal dimensions set with fluidizer will have percentage dimensions but, visually, they exactly will take up the amount of pixels that you indicated. For lower resolutions, all the horizontal dimensions set with fluidizer will scale.</p>
+
+<pre><code>body {
+  @include layout-max-width();
+}
+</code></pre>
+
+<p><em>This will set your layout width as the <code>max-width</code> for the body element. By default, it is set in em units with the value of the <code>$initial-rfs</code> variable (16px if not manually changed) as the relevant font size. If you want to change the relevant font size, change the <code>$rfs</code> parameter like in <code>layout-max-width($rfs: 21px)</code>. If you want to use pixels, set the <code>$em</code> parameter to false, like in <code>layout-max-width($em: false)</code>.</em></p>
+
+<h4>Getting percentage values</h4>
+
+<p>To get percentage values, you can use the <code>percent()</code> function, which takes two arguments: the value to be converted and the containing block width.</p>
+
+<pre><code>percent($value, $cbw)
+</code></pre>
+
+<p>You can provide both the value and the containing block width arguments in two different units:</p>
+
+<ul>
+<li><p>Pixel units: Like in <em>10px</em> or <em>23px</em>.</p></li>
+<li><p>Grid units: A list of two unitless numbers. Firs one telling the amount of column width's the size takes up (without the gutters), and second one telling the amount of gutters the size takes up. Ex: <em>3 2</em> means 3 column width's plus 2 gutters.</p></li>
+</ul><p>Here they are some examples:</p>
+
+<pre><code>margin-left: percent(100px, 400px); //it outputs 'margin-left: 25%'
+
+margin-left: percent(3 2, 400px); //for a 60*20*12 grid, it outputs 'margin-left: 55%'
+
+margin-left: percent(3 3, 6 6); //it outputs, 'margin-left: 50%'
+</code></pre>
+
+<h3>Mixins</h3>
+
+<p>You can use as well two mixins to work it quicker:</p>
+
+<pre><code>fluid-x($width, $padding, $border, $margin, $cbw)
+</code></pre>
+
+<p>and</p>
+
+<pre><code>fluid-column($width, $padding, $border, $margin, $cbw)
+</code></pre>
+
+<p>The only difference is that <code>fluid-column()</code> will add <code>float:left;</code> to make the box appear as a column.</p>
+
+<p>As in the <code>percent()</code> function, you can provide each argument in pixel or grid units, and they can be as well a string to manually force something or false to don't set them. For <code>$padding</code>, <code>$border</code> and <code>$margin</code>, they can be just one value that will be used both for left and right values, or a list of two values, being the first one used for the left property and the second one for the right property.</p>
+
+<p>Here they are some examples:</p>
+
+<pre><code>@include fluid-x($width: 400px, $padding: 20px, $border: 0, $margin: 60px 100px, $cbw: 600px);
+
+@include fluid-column($width: 4 3, $padding: (2 2) (2 2), $border: 0, $margin: auto, $cbw: 12 12);
+</code></pre>
+
+<h3>Vertical layout</h3>
+
+<h4>Configuring design properties</h4>
+
+<p>Set initial relevant font size, usually browser default:</p>
+
+<pre><code>$initial-rfs: 16px;
+</code></pre>
+
+<p>If using baseline rhythm, set baseline height:</p>
+
+<pre><code>$baseline: 18px;
+</code></pre>
+
+<h4>Getting em values</h4>
+
+<p>To get em values you can use the <code>em()</code> function, which takes two arguments: the value to be converted and the relevant font size.</p>
+
+<pre><code>em($value, $rfs)
+</code></pre>
+
+<p>You can provide both the value and the relevant font size arguments in two different units:</p>
+
+<ul>
+<li><p>Pixel units: Like in <em>21px</em> or <em>14px</em>.</p></li>
+<li><p>Baseline units: A unitless number telling the amount of baseline heights the size takes up. Ex: <em>3</em> means 3 baseline height's.</p></li>
+</ul><p>Here they are some examples:</p>
+
+<pre><code>font-size: em(18px, 16px); //it outputs `font-size: 1.125em`
+
+font-size: em(1, 18px); //for a 18px baseline, it outputs `font-size: 1em`
+
+font-size: em(1, 1); //it outputs `font-size: 1em`
+</code></pre>
+
+<h3>Mixins</h3>
+
+<p>You can use as well a mixin to work it quicker:</p>
+
+<pre><code>fluid-y($line-height, $height, $padding, $border, $margin, $rfs)
+</code></pre>
+
+<p>As in the <code>em()</code> function, you can provide each argument in pixel or baseline units, and they can be as well a string to manually force something or false to don't set them. For <code>$padding</code>, <code>$border</code> and <code>$margin</code>, they can be just one value that will be used both for top and bottom values, or a list of two values, being the first one used for the top property and the second one for the bottom property.</p>
+
+<p>Here they are some examples:</p>
+
+<pre><code>@include fluid-y($line-height: 21px, $height: 21px, $border: 0, $margin: 5px 7px, $rfs: 30px);
+
+@include fluid-y($line-height: 1, $height: 0.5, $rfs: 2);
+</code></pre>
+
+<h2>Examples</h2>
+
+<p>You can find code examples in the <code>test</code> directory.</p>
+
+<h2>Reference</h2>
+
+<p>Variables, functions and mixins are fully documented in the source code.</p>
+
+<hr><p>Copyright 2012, Marc Busqué Pérez, under GNU LESSER GENERAL PUBLIC LICENSE
+<a href="mailto:marc@lamarciana.com">marc@lamarciana.com</a> - <a href="http://www.lamarciana.com">http://www.lamarciana.com</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Fluidizer maintained by <a href="https://github.com/laMarciana">laMarciana</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-33129721-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
