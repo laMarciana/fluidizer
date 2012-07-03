@@ -1,5 +1,6 @@
 @import '../sass/fluidizer';
 
+/*X*/
 div {
    /*PERCENT*/
 
@@ -17,6 +18,7 @@ div {
    width: percent(2 2, 5 4); /*42.10%*/
 
    /*LAYOUT MAX WIDTH*/
+
    /*GRID STRATEGY*/
 
    $grid-strategy: true;
@@ -45,7 +47,7 @@ div {
    /*with custom rfs*/
    @include set-layout-max-width(true, 18px); /*53.3em*/
 
-   /*FLUID HORIZONTAL*/
+   /*FLUID X*/
 
    /*all values in pixels, same for left and right*/
    @include fluid-x(300px, 100px, 2px, 50px, 900px);
@@ -89,4 +91,72 @@ div {
    /*FLUID COLUMN*/
    @include fluid-column(300px, 100px, 2px, 50px, 900px);
    /*float: left, 33.3%, 11.1%, 0.2%, 5.5%*/
+}
+
+/*Y*/
+div {
+   $baseline: 18px;
+   $initial-rfs: 16px;
+
+   /*in pixels*/
+   font-size: em(16px);
+   /*1em*/
+   font-size: em(21px);
+   /*1.3125em*/
+   font-size: em(8px);
+   /*0.5em*/
+
+   /*in baseline units*/
+   font-size: em(1);
+   /*1.125em*/
+   font-size: em(0.8);
+   /*0.9em*/
+
+   /*reset*/
+   font-size: $initial-rfs;
+
+   /*FLUID Y*/
+
+   /*values in pixels, same value for top and bottom*/
+   @include fluid-y(14px, 18px, 2px, 1px, 5px, 16px);
+   /*0.875em, 1.125em, 0.125em, 0.0625em, 0.3125em*/
+
+   /*values in pixels, except rfs, same value for top and bottom*/
+   @include fluid-y(14px, 18px, 2px, 1px, 5px, 0.888888);
+   /*0.875em, 1.125em, 0.125em, 0.0625em, 0.3125em*/
+
+   /*values in pixels, different for left and right*/
+   @include fluid-y(14px, 18px, 2px 3px, 1px 1px, 5px 9px, 16px);
+   /*0.875em, 1.125em, 0.125em, 0.1875em, 0.0625em 0.0625em, 0.5625em, 0.3125em*/
+
+   /*values in baseline units, same value for top and bottom*/
+   @include fluid-y(2, 1, 0.5, 0.5, 3, 1);
+   /*2em, 1em, 0.5em, 0.5em, 3em*/
+
+   /*values in baseline units, except rfs, same value for top and bottom*/
+   @include fluid-y(2, 1, 0.5, 0.5, 3, 18px);
+   /*2em, 1em, 0.5em, 0.5em, 3em*/
+
+   /*values in baseline units, different for top and bottom*/
+   @include fluid-y(2, 1, 0.5 0.5, 0.5 1, 4 3, 18px);
+   /*2em, 1em, 0.5em, 0.5em, 0.5em, 1em, 4em 3em*/
+
+   /*values in pixels or baseline, different for top and bottom*/
+   @include fluid-y(18px, 16px, 1 1, 0.5 18px, 16px 2, 18px);
+   /*1em, 0.8888em, 1em, 1em, 0.5em, 1em, 0.888e, 2em*/
+
+   /*values as strings or 0, same for left and right*/
+   @include fluid-y(auto, auto, auto, 0, auto, 18px);
+   /*auto, auto, auto, 0, auto*/
+
+   /*values as strings or 0, different for left and right*/
+   @include fluid-y(auto, auto, auto auto, 0 0, auto 0, 1);
+   /*auto, auto, auto, auto, 0, 0, auto, 0*/
+
+   /*values aren't set, same for left and right*/
+   @include fluid-y(false, false, false, false, false, 1);
+
+   /*some values aren't set, different for left and right*/
+   @include fluid-y(21px, false, 18px false, false auto, false, 2);
+   /*0.583em, 0.5em, auto*/
 }

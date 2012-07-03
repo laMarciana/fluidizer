@@ -1,3 +1,4 @@
+/*X*/
 div {
   /*PERCENT*/
   /*size and cbw in px*/
@@ -35,7 +36,7 @@ div {
   /*with custom rfs*/
   max-width: 53.333em;
   /*53.3em*/
-  /*FLUID HORIZONTAL*/
+  /*FLUID X*/
   /*all values in pixels, same for left and right*/
   width: 33.333%;
   padding-left: 11.111%;
@@ -124,3 +125,117 @@ div {
   margin-left: 5.556%;
   margin-right: 5.556%;
   /*float: left, 33.3%, 11.1%, 0.2%, 5.5%*/ }
+
+/*Y*/
+div {
+  /*in pixels*/
+  font-size: 1em;
+  /*1em*/
+  font-size: 1.313em;
+  /*1.3125em*/
+  font-size: 0.5em;
+  /*0.5em*/
+  /*in baseline units*/
+  font-size: 1.125em;
+  /*1.125em*/
+  font-size: 0.9em;
+  /*0.9em*/
+  /*reset*/
+  font-size: 16px;
+  /*FLUID Y*/
+  /*values in pixels, same value for top and bottom*/
+  line-height: 0.875em;
+  height: 1.125em;
+  padding-top: 0.125em;
+  padding-bottom: 0.125em;
+  border-top-width: 0.063em;
+  border-bottom-width: 0.063em;
+  margin-top: 0.313em;
+  margin-bottom: 0.313em;
+  /*0.875em, 1.125em, 0.125em, 0.0625em, 0.3125em*/
+  /*values in pixels, except rfs, same value for top and bottom*/
+  line-height: 0.875em;
+  height: 1.125em;
+  padding-top: 0.125em;
+  padding-bottom: 0.125em;
+  border-top-width: 0.063em;
+  border-bottom-width: 0.063em;
+  margin-top: 0.313em;
+  margin-bottom: 0.313em;
+  /*0.875em, 1.125em, 0.125em, 0.0625em, 0.3125em*/
+  /*values in pixels, different for left and right*/
+  line-height: 0.875em;
+  height: 1.125em;
+  padding-top: 0.125em;
+  padding-bottom: 0.188em;
+  border-top-width: 0.063em;
+  border-bottom-width: 0.063em;
+  margin-top: 0.313em;
+  margin-bottom: 0.563em;
+  /*0.875em, 1.125em, 0.125em, 0.1875em, 0.0625em 0.0625em, 0.5625em, 0.3125em*/
+  /*values in baseline units, same value for top and bottom*/
+  line-height: 2em;
+  height: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top-width: 0.5em;
+  border-bottom-width: 0.5em;
+  margin-top: 3em;
+  margin-bottom: 3em;
+  /*2em, 1em, 0.5em, 0.5em, 3em*/
+  /*values in baseline units, except rfs, same value for top and bottom*/
+  line-height: 2em;
+  height: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top-width: 0.5em;
+  border-bottom-width: 0.5em;
+  margin-top: 3em;
+  margin-bottom: 3em;
+  /*2em, 1em, 0.5em, 0.5em, 3em*/
+  /*values in baseline units, different for top and bottom*/
+  line-height: 2em;
+  height: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top-width: 0.5em;
+  border-bottom-width: 1em;
+  margin-top: 4em;
+  margin-bottom: 3em;
+  /*2em, 1em, 0.5em, 0.5em, 0.5em, 1em, 4em 3em*/
+  /*values in pixels or baseline, different for top and bottom*/
+  line-height: 1em;
+  height: 0.889em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+  border-top-width: 0.5em;
+  border-bottom-width: 1em;
+  margin-top: 0.889em;
+  margin-bottom: 2em;
+  /*1em, 0.8888em, 1em, 1em, 0.5em, 1em, 0.888e, 2em*/
+  /*values as strings or 0, same for left and right*/
+  line-height: auto;
+  height: auto;
+  padding-top: auto;
+  padding-bottom: auto;
+  border-top-width: 0;
+  border-bottom-width: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  /*auto, auto, auto, 0, auto*/
+  /*values as strings or 0, different for left and right*/
+  line-height: auto;
+  height: auto;
+  padding-top: auto;
+  padding-bottom: auto;
+  border-top-width: 0;
+  border-bottom-width: 0;
+  margin-top: auto;
+  margin-bottom: 0;
+  /*auto, auto, auto, auto, 0, 0, auto, 0*/
+  /*values aren't set, same for left and right*/
+  /*some values aren't set, different for left and right*/
+  line-height: 0.583em;
+  padding-top: 0.5em;
+  border-bottom-width: auto;
+  /*0.583em, 0.5em, auto*/ }
