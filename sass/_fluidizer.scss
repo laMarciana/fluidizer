@@ -27,6 +27,11 @@
 //
 //Property horizontal size units: Horizontal size units, a string to manually force something or false to don't set anything. Examples are "480px", "3 2", "auto" or "false".
 //
+//Vertical size units: An integer in pixels to tell a vertical size in pixels, or an unitless integer to indicate a vertical size in baseline units (see below).
+//
+//Baseline units: A unitless integer. It tells how many baseline heights the vertical size takes up.
+//
+//Property vertical size units: Vertical size units, a string to manually force something or false to don't set it.
 //
 //VARIABLES
 //
@@ -45,13 +50,19 @@ $columns: 12 !default;
 //@global px Non-grid layout width in pixels. Ignored if $grid-strategy is set to true
 $design-max-width: 960px !default;
 
+//@global px Baseline height in pixels.
+$baseline: 18px !default;
+
+//@global px Initial relevant font size (usually browser default).
+$initial-rfs: 16px !default;
+
 //MIXINS
 //
 //Set the max-width property for an element to the grid width or the layout maximum width. This mixin is most of the times applied to an element that is the container of anything else (sometimes this is 'body'), and it is used when you want to have a maximum resolution limit. When the screen resolution is equal or higher than this value, all the dimensions set with fluidizer will have fluid dimensions but visually they exactly will take up the amount of pixels that you indicated. For lower resolutions, all the dimensions set with fluidizer will scale.
 //
 //@param bool $em Whether to set max-width in em units or not. Defaults to true.
 //@param px $rfs Relative font size used to calculate max-width in em. Only used if $em parameter is set to true.
-@mixin set-layout-max-width($em: true, $rfs: 16px) {
+@mixin set-layout-max-width($em: true, $rfs: $initial-rfs) {
    $max-width: get-layout-max-width();
    @if ($em) {
       $max-width: ($max-width / $rfs) * 1em;
@@ -91,6 +102,28 @@ $design-max-width: 960px !default;
    @include fluid-horizontal($width, $padding, $border, $margin, $cbw);
 }
 
+//Display rules for vertical fluid sizes.
+//
+///@param px|int|string|bool $line-height Line-height value in property vertical size units.
+///@param px|int|string|bool $height Height value in property vertical size units.
+///@param px|int|string|bool $padding Padding top and bottom values in vertical size units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
+///@param px|int|string|bool $border Border top and bottom values in vertical size units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
+///@param px|int|string|bool $margin Margin top and bottom values in vertical size units. One (the same for top and bottom) or a list of two (first for top, and second for bottom).
+//@param px|int $rfs Relevant font size.
+@mixin fluid-vertical($line-height: false, $height: false, $padding: false, $border: false, $margin: false, $rfs: $initial-rfs) {
+   @include display-vertical-property(line-height, $line-height, $rfs);
+   @include display-vertical-property(height, $height, $rfs);
+   $top-bottom-padding: extract-top-bottom-values($padding);
+   @include display-vertical-property('padding-top', nth($top-bottom-padding, 1), $rfs);
+   @include display-vertical-property('padding-bottom', nth($top-bottom-padding, 2), $rfs);
+   $top-bottom-border: extract-top-bottom-values($border);
+   @include display-vertical-property('border-top-width', nth($top-bottom-border, 1), $rfs);
+   @include display-vertical-property('border-bottom-width', nth($top-bottom-border, 2), $rfs);
+   $top-bottom-margin: extract-top-bottom-values($margin);
+   @include display-vertical-property('margin-top', nth($top-bottom-margin, 1), $rfs);
+   @include display-vertical-property('margin-bottom', nth($top-bottom-margin, 2), $rfs);
+}
+
 //For given property and value, display its rule with the value in percentage units if it's numeric.
 //
 //@param string $property Property the rule will be applied on.
@@ -100,6 +133,21 @@ $design-max-width: 960px !default;
    @if ($value) {
       @if (is-px-unit($value) or is-grid-unit($value)) {
          #{$property}: percent($value, $cbw);
+      } @else {
+         #{$property}: unquote($value);
+      }
+   }
+}
+
+//For given property and value, display its rule with the value in em units if it's numeric.
+//
+//@param string $property Property the rule will be applied on.
+//@param px|list|string $value A value in property vertical size units.
+//@param px $rfs Relevant font size in vertical size units.
+@mixin display-vertical-property($property, $value, $rfs) {
+   @if ($value) {
+      @if (is-px-unit($value) or is-baseline-unit($value)) {
+         #{$property}: em($value, $rfs);
       } @else {
          #{$property}: unquote($value);
       }
@@ -124,40 +172,15 @@ $design-max-width: 960px !default;
    @return px-to-percent($h-size-px, $cbw);
 }
 
-//Returns the grid width in pixels.
+//Converts from vertical size units to em.
 //
-//@return px The grid width in pixels.
-@function grid-width() {
-   @return ($column-width + $gutter-width) * $columns;
-}
-
-//Returns the layout maximum width, discerning between a grid design and a non-grid one.
+//@param px|int $value A value in vertical size units
+//@param int|px $rfs Relevant font size in vertical size units.
 //
-//@return px Layout maximum width in pixels.
-@function get-layout-max-width() {
-   @if ($grid-strategy) {
-      @return grid-width();
-   } @else {
-      @return $design-max-width;
-   }
-}
-
-//For a given value representing both left and right size, return a list of two elements, being first one left value and second one right value.
-//
-//@param px|list|string $value One (the same for left and right) or two (first is left, second is right) property horizontal size units.
-//
-//@return list Left and right values discerned.
-@function extract-left-right-values($value) {
-   $value-left: false;
-   $value-right: false;
-   @if (type_of($value) != list or is-grid-unit($value) and is-double-zero($value) == false) {
-      $value-left: $value;
-      $value-right: $value;
-   } @else {
-      $value-left: nth($value, 1);
-      $value-right: nth($value, 2);
-   }
-   @return ($value-left, $value-right);
+//@return em The value converted to em's.
+@function em($value, $rfs: $initial-rfs) {
+   $v-size-px = vertical-to-px($value);
+   @return px-to-em($v-size-px, $rfs);
 }
 
 //Converts a pixels value to percentage units.
@@ -191,6 +214,57 @@ $design-max-width: 960px !default;
 //@return px Value converted to pixels.
 @function grid-to-px($value) {
    @return ((nth($value, 1) * $column-width) + (nth($value, 2) * $gutter-width));
+}
+
+//Converts a px value to em.
+//
+//@param px $value A value in pixels.
+//@param px $rfs Relevant font size in vertical size units.
+//
+//@return em The value converted to em's.
+@function px-to-em($value, $rfs) {
+   $rfs-px: vertical-to-px($rfs);
+   @return ($px-size / $rfs-px) * 1em;
+}
+
+//Converts a vertical size units value to pixels.
+//
+//@param px $value A value in vertical size units.
+//
+//@return em The value converted to pixels.
+@function vertical-to-px($value) {
+   @if (is-baseline-unit($value)) {
+      @return baseline-to-px($value);
+   } @else if (is-px-unit($valye)) {
+      @return $value;
+   }
+}
+
+//Converts baseline units to pixels.
+//
+//@param int $value A value in baseline units.
+//
+//@return px The value converted to pixels.
+@function baseline-to-px($value) {
+   @return $value * $baseline;
+}
+
+//Returns the grid width in pixels.
+//
+//@return px The grid width in pixels.
+@function grid-width() {
+   @return ($column-width + $gutter-width) * $columns;
+}
+
+//Returns the layout maximum width, discerning between a grid design and a non-grid one.
+//
+//@return px Layout maximum width in pixels.
+@function get-layout-max-width() {
+   @if ($grid-strategy) {
+      @return grid-width();
+   } @else {
+      @return $design-max-width;
+   }
 }
 
 //Check whether a value is expressed in grid units or not.
@@ -239,4 +313,54 @@ $design-max-width: 960px !default;
       }
    }
    @return false;
+}
+
+//Check whether a value is expressed in baseline units or not.
+//
+//@param mixed $value The value to check.
+//
+//@return bool Whether the value is expressed in baseline units or not.
+@function is-baseline-unit($value) {
+   @if (type_of($value) == number) {
+      @if (unitless($value)) {
+         @return true;
+      }
+      @return false;
+   }
+}
+
+//For a given value representing both left and right size, return a list of two elements, being first one left value and second one right value.
+//
+//@param px|list|string $value One (the same for left and right) or two (first is left, second is right) property horizontal size units.
+//
+//@return list Left and right values discerned.
+@function extract-left-right-values($value) {
+   $value-left: false;
+   $value-right: false;
+   @if (type_of($value) != list or is-grid-unit($value) and is-double-zero($value) == false) {
+      $value-left: $value;
+      $value-right: $value;
+   } @else {
+      $value-left: nth($value, 1);
+      $value-right: nth($value, 2);
+   }
+   @return ($value-left, $value-right);
+}
+
+//For a given value representing both top and bottom size, return a list of two elements, being first one top value and second one bottom value
+//
+//@param px|list|string $value One (the same for top and bottom) or two (first is top, second is bottom) peroperty vertical size units.
+//
+//@return list Top and bottom values discerned.
+@function extract-top-bottom-values($value) {
+   $value-top: false;
+   $value-bottom: false;
+   @if (type_of($value) != list) {
+      $value-top: $value;
+      $value-bottom: $value;
+   } @else {
+      $value-top: nth($value, 1);
+      $value-bottom: nth($value, 2);
+   }
+   @return ($value-top, $value-bottom);
 }
