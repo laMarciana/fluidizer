@@ -202,7 +202,7 @@ $initial-rfs: 16px !default;
 @function x-to-px($value) {
    @if (is-grid-unit($value)) {
       @return grid-to-px($value);
-   } @else $value {
+   } @else {
       @return $value;
    }
 }
