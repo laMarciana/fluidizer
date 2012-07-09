@@ -202,7 +202,7 @@ $initial-rfs: 16px !default;
 @function x-to-px($value) {
    @if (is-grid-unit($value)) {
       @return grid-to-px($value);
-   } @else if (is-px-unit($value)) {
+   } @else $value {
       @return $value;
    }
 }
@@ -235,7 +235,7 @@ $initial-rfs: 16px !default;
 @function y-to-px($value) {
    @if (is-baseline-unit($value)) {
       @return baseline-to-px($value);
-   } @else if (is-px-unit($value)) {
+   } @else {
       @return $value;
    }
 }
