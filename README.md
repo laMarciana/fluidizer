@@ -77,7 +77,7 @@ and
 
 The only difference is that `fluid-column()` will add `float:left;` to make the box appear as a column.
 
-As in the `percent()` function, you can provide each argument in pixel or grid units, and they can be as well a string to manually force something or false to don't set them. For `$padding`, `$border` and `$margin`, they can be just one value that will be used both for left and right values, or a list of two values, being the first one used for the left property and the second one for the right property.
+As in the `percent()` function, you can provide each argument in pixel or grid units, and they can be as well a string to manually force something or `nil` to don't set them. For `$padding`, `$border` and `$margin`, they can be just one value that will be used both for left and right values, or a list of two values, being the first one used for the left property and the second one for the right property.
 
 Here they are some examples:
 
@@ -120,7 +120,7 @@ You can use as well a mixin to work it quicker:
 
     fluid-y($line-height, $height, $padding, $border, $margin, $rfs)
 
-As in the `em()` function, you can provide each argument in pixel or baseline units, and they can be as well a string to manually force something or false to don't set them. For `$padding`, `$border` and `$margin`, they can be just one value that will be used both for top and bottom values, or a list of two values, being the first one used for the top property and the second one for the bottom property.
+As in the `em()` function, you can provide each argument in pixel or baseline units, and they can be as well a string to manually force something or `nil` to don't set them. For `$padding`, `$border` and `$margin`, they can be just one value that will be used both for top and bottom values, or a list of two values, being the first one used for the top property and the second one for the bottom property.
 
 Here they are some examples:
 

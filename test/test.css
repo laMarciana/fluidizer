@@ -15,6 +15,16 @@ div {
   /*size and cbw in grid*/
   width: 42.105%;
   /*42.10%*/
+  /*size is 0*/
+  width: 0;
+  /*0*/
+  width: 0;
+  /*0*/
+  width: 0;
+  /*0*/
+  /*size is not a size*/
+  width: auto;
+  /*auto*/
   /*LAYOUT MAX WIDTH*/
   /*GRID STRATEGY*/
   /*in em's, default rfs*/
@@ -140,6 +150,14 @@ div {
   /*1.125em*/
   font-size: 0.9em;
   /*0.9em*/
+  /*size is 0*/
+  font-size: 0;
+  /*0*/
+  font-size: 0;
+  /*0*/
+  /*size is not a size*/
+  width: auto;
+  /*auto*/
   /*reset*/
   font-size: 16px;
   /*FLUID Y*/

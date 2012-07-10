@@ -25,13 +25,13 @@
 //
 //Grid units: Two unitless floating-point numbers. First one tells how many columns width's (without its gutters) the horizontal size takes up. Second one tells how many gutter width's the horizontal size takes up. For example, "3 2".
 //
-//Property x units: x units, a string to manually force something or false to don't set anything. Examples are "480px", "3 2", "auto" or "false".
+//Property x units: x units, a string to manually force something or nil to don't set anything. Examples are "480px", "3 2", "auto" or "false".
 //
 //y units: An integer in pixels to tell a vertical size in pixels, or an unitless floating-point number to tell a vertical size in baseline units (see below).
 //
 //Baseline units: A unitless floating-point number. It tells how many baseline heights the vertical size takes up.
 //
-//Property y units: y units, a string to manually force something or false to don't set it.
+//Property y units: y units, a string to manually force something or nil to don't set it.
 //
 //VARIABLES
 //
@@ -63,9 +63,12 @@ $initial-rfs: 16px !default;
 //@param bool $em Whether to set max-width in em units or not. Defaults to true.
 //@param px $rfs Relative font size used to calculate max-width in em. Only used if $em parameter is set to true.
 @mixin layout-max-width($em: true, $rfs: $initial-rfs) {
+   @if (type_of($em) != 'bool') {
+      @warn "'$em' parameter is '#{$em}' but must be a boolean";
+   }
    $max-width: get-layout-max-width();
    @if ($em) {
-      $max-width: ($max-width / $rfs) * 1em;
+      $max-width: em($max-width, $rfs);
    }
    max-width: $max-width;
 }
@@ -130,12 +133,8 @@ $initial-rfs: 16px !default;
 //@param px|list|string $value A value in property x units.
 //@param px $cbw Containing block width in x units.
 @mixin display-x-property($property, $value, $cbw) {
-   @if ($value) {
-      @if (is-px-unit($value) or is-grid-unit($value)) {
-         #{$property}: percent($value, $cbw);
-      } @else {
-         #{$property}: unquote($value);
-      }
+   @if ($value != nil) {
+      #{$property}: percent($value, $cbw);
    }
 }
 
@@ -145,12 +144,8 @@ $initial-rfs: 16px !default;
 //@param px|list|string $value A value in property y units.
 //@param px $rfs Relevant font size in y units.
 @mixin display-y-property($property, $value, $rfs) {
-   @if ($value) {
-      @if (is-px-unit($value) or is-baseline-unit($value) and $value != 0) {
-         #{$property}: em($value, $rfs);
-      } @else {
-         #{$property}: unquote($value);
-      }
+   @if ($value != nil) {
+      #{$property}: em($value, $rfs);
    }
 }
 
@@ -161,15 +156,50 @@ $initial-rfs: 16px !default;
 
 //FUNCTIONS
 //
+//Converts a value to percentage units if is possible, otherwise returns its best css representation. 
+//
+//@param mixed $value The value to be converted.
+//@param px|list $cbw Containing block width in x units.
+//
+//@return % The value converted to percentage or in its best CSS representation.
+@function percent($value, $cbw) {
+   @if (is-a-kind-of-zero($value)) {
+      @return 0;
+   } @else if (is-x-unit($value)) {
+      @return x-to-percent($value, $cbw);
+   } @else {
+      @return unquote($value);
+   }
+}
+
 //Converts x units to percentage.
 //
 //@param px|list $value A value in x units.
 //@param px|list $cbw Containing block width in x units.
 //
 //@return % The value converted to percentage.
-@function percent($value, $cbw) {
+@function x-to-percent($value, $cbw) {
+   @if (not is-x-unit($value)) {
+      @warn "'$value' parameter is '#{$value}' but must be in x units";
+   }
    $value-px: x-to-px($value);
    @return px-to-percent($value-px, $cbw);
+}
+
+//Converts a value to em if possible, otherwise returns its css representation
+//
+//@param mixed $value The value to be converted.
+//@param int|px $rfs Relevant font size in y units.
+//
+//@return em The value converted to em's.
+@function em($value, $rfs: $initial-rfs) {
+   @if (is-a-kind-of-zero($value)) {
+      @return 0;
+   } @else if (is-y-unit($value)) {
+      @return y-to-em($value, $rfs);
+   } @else {
+      @return unquote($value);
+   }
 }
 
 //Converts y units to em.
@@ -178,9 +208,27 @@ $initial-rfs: 16px !default;
 //@param int|px $rfs Relevant font size in y units.
 //
 //@return em The value converted to em's.
-@function em($value, $rfs: $initial-rfs) {
+@function y-to-em($value, $rfs: $initial-rfs) {
+   @if (not is-y-unit($value)) {
+      @warn "'$value' parameter is '#{$value}' but must be in y units";
+   }
    $value-px: y-to-px($value);
    @return px-to-em($value-px, $rfs);
+}
+
+//Returns de CSS representation of a string, a kind of zero or some unknown value
+//
+//@param mixed $value The value to be represented in CSS
+//
+//@return The CSS representation of the value.
+@function css-representation($value) {
+   @if (type_of($value) == 'string') {
+      @return unquote($value);
+   } @else if (is-a-kind-of-zero($value)) {
+      @return 0;
+   } @else {
+      @return $value;
+   }
 }
 
 //Converts pixels to percentage.
@@ -190,6 +238,9 @@ $initial-rfs: 16px !default;
 //
 //@return % The value converted to percentage.
 @function px-to-percent($value, $cbw) {
+   @if (not is-px-unit($value)) {
+      @warn "'$value' parameter is '#{$value}' but must be in pixels";
+   }
    $cbw-px: x-to-px($cbw);
    @return ($value / $cbw-px) * 100%;
 }
@@ -200,9 +251,12 @@ $initial-rfs: 16px !default;
 //
 //@return % The value converted to pixels.
 @function x-to-px($value) {
+   @if (not is-x-unit($value)) {
+      @warn "'$value' parameter is '#{$value}' but must be in x units";
+   }
    @if (is-grid-unit($value)) {
       @return grid-to-px($value);
-   } @else {
+   } @else if (is-px-unit($value)) {
       @return $value;
    }
 }
@@ -213,6 +267,9 @@ $initial-rfs: 16px !default;
 //
 //@return px The alue converted to pixels.
 @function grid-to-px($value) {
+   @if (not is-grid-unit($value)) {
+      @warn "'$value' parameter is '#{$value}' but must be in grid units";
+   }
    @return ((nth($value, 1) * $column-width) + (nth($value, 2) * $gutter-width));
 }
 
@@ -223,6 +280,9 @@ $initial-rfs: 16px !default;
 //
 //@return em The value converted to em's.
 @function px-to-em($value, $rfs) {
+   @if (not is-px-unit($value)) {
+      @warn "'$value' parameter is '#{$value}' but must be in pixels";
+   }
    $rfs-px: y-to-px($rfs);
    @return ($value / $rfs-px) * 1em;
 }
@@ -233,10 +293,15 @@ $initial-rfs: 16px !default;
 //
 //@return em The value converted to pixels.
 @function y-to-px($value) {
+   @if (not is-y-unit($value)) {
+      @warn "'$value' parameter is '#{$value}' but must be in y units";
+   }
    @if (is-baseline-unit($value)) {
       @return baseline-to-px($value);
-   } @else {
+   } @else if (is-px-unit($value)) {
       @return $value;
+   } @else if (unitless($value)) {
+      @return $value * 1px;
    }
 }
 
@@ -246,6 +311,9 @@ $initial-rfs: 16px !default;
 //
 //@return px The value converted to pixels.
 @function baseline-to-px($value) {
+   @if (not is-baseline-unit($value)) {
+      @warn "'$value' parameter is '#{$value}' but must be in baseline units";
+   }
    @return $value * $baseline;
 }
 
@@ -253,6 +321,13 @@ $initial-rfs: 16px !default;
 //
 //@return px The grid width in pixels.
 @function grid-width() {
+   @if (not is-px-unit($column-width)) {
+      @warn "'$column-width' is '#{$column-width}' but must be in pixels";
+   } @else if (not is-px-unit($gutter-width)) {
+      @warn "'$gutter-width' is '#{$gutter-width}' but must be in pixels"; 
+   } @else if (not is-unitless-number($columns)) {
+      @warn "'$columns' is '#{$columns}' but must be a unitless number";
+   }
    @return ($column-width + $gutter-width) * $columns;
 }
 
@@ -263,9 +338,66 @@ $initial-rfs: 16px !default;
    @if ($grid-strategy) {
       @return grid-width();
    } @else {
+      @if (not is-px-unit($design-width)) {
+         @warn "'$design-width' is '#{$design-width}' but must be in pixels";
+      }
       @return $design-width;
    }
 }
+
+//Ckech whether a value is expressed in property x units or not
+//
+//@param mixed $value The value to check.
+//
+//@return bool Whether the value is expressed in property x units or not.
+@function is-property-x-unit($value) {
+   @if (is-x-unit($value) or type_of($value) == 'string' or $value == nil) {
+      @return true;
+   } @else {
+      @return false;
+   }
+}
+
+//Ckech whether a value is expressed in x units or not
+//
+//@param mixed $value The value to check.
+//
+//@return bool Whether the value is expressed in x units or not.
+@function is-x-unit($value) {
+   @if (is-px-unit($value) or is-grid-unit($value)) {
+      @return true;
+   } @else {
+      @return false;
+   }
+}
+
+//Check whether a value is expressed in pixels units or not. It is not checked if the value is an integer to allow CSS hacks that use fractions of pixels.
+//
+//@param mixed $value The value to check.
+//
+//@return bool Whether the value is expressed in pixel units or not.
+@function is-px-unit($value) {
+   @if (type_of($value) == number) {
+      @if (unit($value) == px) {
+         @return true;
+      }
+   }
+   @return false;
+}
+
+//Ckech whether a value is expressed in property y units or not
+//
+//@param mixed $value The value to check.
+//
+//@return bool Whether the value is expressed in property y units or not.
+@function is-property-y-unit($value) {
+   @if (is-y-unit($value) or type_of($value) == 'string' or $value == nil) {
+      @return true;
+   } @else {
+      @return false;
+   }
+}
+
 
 //Check whether a value is expressed in grid units or not.
 //
@@ -285,18 +417,44 @@ $initial-rfs: 16px !default;
    @return false;
 }
 
-//Check whether a value is expressed in pixels units or not. It is not checked if the value is an integer to allow CSS hacks that use fractions of pixels.
+//Ckech whether a value is expressed in y units or not
 //
 //@param mixed $value The value to check.
 //
-//@return bool Whether the value is expressed in pixel units or not.
-@function is-px-unit($value) {
+//@return bool Whether the value is expressed in y units or not.
+@function is-y-unit($value) {
+   @if (is-px-unit($value) or is-baseline-unit($value)) {
+      @return true;
+   } @else {
+      @return false;
+   }
+}
+
+//Check whether a value is expressed in baseline units or not.
+//
+//@param mixed $value The value to check.
+//
+//@return bool Whether the value is expressed in baseline units or not.
+@function is-baseline-unit($value) {
    @if (type_of($value) == number) {
-      @if (unit($value) == px) {
+      @if (unitless($value)) {
          @return true;
       }
    }
    @return false;
+}
+
+//Check wheter a value is a kind of zero.
+//
+//@param mixed $value The value to check.
+//
+//@return bool Whether the value is a kind of zero.
+@function is-a-kind-of-zero($value) {
+   @if ($value == 0 or is-double-zero($value)) {
+      @return true;
+   } @else {
+      @return false;
+   }
 }
 
 //Check whether a value is a list of two zeros or not.
@@ -315,12 +473,12 @@ $initial-rfs: 16px !default;
    @return false;
 }
 
-//Check whether a value is expressed in baseline units or not.
+//Check whether a value is a unitless number.
 //
 //@param mixed $value The value to check.
 //
-//@return bool Whether the value is expressed in baseline units or not.
-@function is-baseline-unit($value) {
+//@return bool Whether the value is a unitless number.
+@function is-unitless-number($value) {
    @if (type_of($value) == number) {
       @if (unitless($value)) {
          @return true;
@@ -337,7 +495,7 @@ $initial-rfs: 16px !default;
 @function extract-left-right-values($value) {
    $value-left: false;
    $value-right: false;
-   @if (type_of($value) != list or is-grid-unit($value) and is-double-zero($value) == false) {
+   @if (type_of($value) != list or is-grid-unit($value)) {
       $value-left: $value;
       $value-right: $value;
    } @else {

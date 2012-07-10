@@ -17,6 +17,14 @@ div {
    /*size and cbw in grid*/
    width: percent(2 2, 5 4); /*42.10%*/
 
+   /*size is 0*/
+   width: percent(0, 200px); /*0*/
+   width: percent(0 0, 200px); /*0*/
+   width: percent(0px, 200px); /*0*/
+
+   /*size is not a size*/
+   width: percent(auto, 200px); /*auto*/
+
    /*LAYOUT MAX WIDTH*/
 
    /*GRID STRATEGY*/
@@ -82,10 +90,10 @@ div {
    /*auto, auto, auto, 0, 0, auto, auto*/
 
    /*values aren't set, same for left and right*/
-   @include fluid-x(false, false, false, false, 700px);
+   @include fluid-x(nil, nil, nil, nil, 700px);
 
    /*some values aren't set, different for left and right*/
-   @include fluid-x(false, false auto, 0 false, 100px false, 700px);
+   @include fluid-x(nil, nil auto, 0 nil, 100px nil, 700px);
    /*auto, 0, 14.28%*/
 
    /*FLUID COLUMN*/
@@ -111,6 +119,15 @@ div {
    /*1.125em*/
    font-size: em(0.8);
    /*0.9em*/
+
+   /*size is 0*/
+   font-size: em(0);
+   /*0*/
+   font-size: em(0px);
+   /*0*/
+
+   /*size is not a size*/
+   width: percent(auto, 200px); /*auto*/
 
    /*reset*/
    font-size: $initial-rfs;
@@ -154,9 +171,9 @@ div {
    /*auto, auto, auto, auto, 0, 0, auto, 0*/
 
    /*values aren't set, same for left and right*/
-   @include fluid-y(false, false, false, false, false, 1);
+   @include fluid-y(nil, nil, nil, nil, nil, 1);
 
    /*some values aren't set, different for left and right*/
-   @include fluid-y(21px, false, 18px false, false auto, false, 2);
+   @include fluid-y(21px, nil, 18px nil, nil auto, nil, 2);
    /*0.583em, 0.5em, auto*/
 }
