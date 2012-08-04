@@ -1,3 +1,15 @@
+2012-08-04  Marc Busqué  <marc@lamarciana.com>
+
+* Version 2.1.1
+* test.scss renamed to _test.scss so that it doesn't create any css when it's
+used within other projects
+
+2012-06-10  Marc Busqué  <marc@lamarciana.com>
+
+* Version 2.1
+* Added error handling
+* property-x/y-units use nil instead of false to don't set anything
+
 2012-06-03  Marc Busqué  <marc@lamarciana.com>
 
 * Version 2.0. Visually reference removed, because if used it introduced a lot
